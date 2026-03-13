@@ -51,11 +51,6 @@ namespace Downloader
             {
                 await downloader.Download(url, downFolder, quality, progress);
             }
-            if (type == "Video")
-            {
-               
-                    await downloader.Download(url, downFolder, quality, progress);
-            }
             else if (type == "Audio")
             {
                 await downloader.DownloadAudio(url, downFolder, progress);

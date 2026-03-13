@@ -30,6 +30,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox x:Name="urlTable"
+            TextChanged="urlTable_TextChanged"
              Grid.Column="0"
              Foreground="Gray"
              Background="#3C3F41"

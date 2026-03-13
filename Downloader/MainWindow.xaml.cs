@@ -14,14 +14,25 @@ namespace Downloader
         public MainWindow()
         {
             InitializeComponent();
-            qualityBox.ItemsSource = new List<string> { "1080", "720", "480", "360" };
-            qualityBox.SelectedIndex = 0;
             typeBox.ItemsSource = new List<string> { "Video", "Audio" };
             typeBox.SelectedIndex = 0;
+        }
+        private async void urlTable_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string url = urlTable.Text.Trim();
+
+            if (url.Contains("youtube.com/watch"))
+            {
+                var formats = await downloader.GetVideoFormats(url);
+                qualityBox.ItemsSource = formats;
+                qualityBox.SelectedIndex = 0;
+            }
+
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+
 
             string downFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             string url = urlTable.Text;
@@ -42,26 +53,14 @@ namespace Downloader
             }
             if (type == "Video")
             {
-                try
-                {
+               
                     await downloader.Download(url, downFolder, quality, progress);
-                    
-                   
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error: {ex.Message}");
-                }
             }
             else if (type == "Audio")
             {
                 await downloader.DownloadAudio(url, downFolder, progress);
               
             }
-           
-            MessageBox.Show(" Downloaded!");
-           
-
     }
         private void typeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

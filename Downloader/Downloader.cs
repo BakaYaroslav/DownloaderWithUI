@@ -31,14 +31,6 @@ namespace Downloader
             {
                 MessageBox.Show("Video downloaded successful");
             }
-            else
-            {
-              
-                string errors = string.Join("\n", result.ErrorOutput);
-                MessageBox.Show($"Error:\n{errors}");
-            }
-
-
 
         }
         public async Task<List<string>> GetVideoFormats(string url)

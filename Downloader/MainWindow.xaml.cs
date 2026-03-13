@@ -4,6 +4,8 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Downloader
 {
@@ -23,9 +25,25 @@ namespace Downloader
 
             if (url.Contains("youtube.com/watch"))
             {
+                urlLabel.Content = "Paste link here:";
+                urlLabel.Foreground = Brushes.DarkGray;
                 var formats = await downloader.GetVideoFormats(url);
                 qualityBox.ItemsSource = formats;
                 qualityBox.SelectedIndex = 0;
+                var info = await downloader.GetInfo(url);
+
+                videoTitle.Text = info.Title;
+                videoInfo.Text = $"{info.Duration} · {info.Author}";
+
+                var bmp = new BitmapImage(new Uri(info.Thumbnail)); // превюшка видео
+                thumbnail.Source = bmp;
+
+                previewCard.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                urlLabel.Content = "Invalid link and YOU!";
+                urlLabel.Foreground = Brushes.Red;
             }
 
         }
@@ -46,7 +64,7 @@ namespace Downloader
             }
 
             var progress = new Progress<double>(updateProgress);
-
+           
             if (type == "Video")
             {
                 await downloader.Download(url, downFolder, quality, progress);
@@ -56,15 +74,12 @@ namespace Downloader
                 await downloader.DownloadAudio(url, downFolder, progress);
               
             }
-    }
-        private void typeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (typeBox.SelectedItem.ToString() == "Audio")
-                qualityBox.Visibility = Visibility.Collapsed;
+
+            bool success = await downloader.Download(url, downFolder, quality, progress);
+            if (success)
+                progressLabel.Content = "Video Downloaded!";
             else
-                qualityBox.Visibility = Visibility.Visible;
+                progressLabel.Content = "Failed";
         }
-
-
     }
 }

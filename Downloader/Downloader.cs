@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Options;
@@ -16,7 +17,7 @@ namespace Downloader
         }
         
         // async говорит: "этот метод будет ждать не замораживая программу"
-        public async Task Download(string url, string outputFolder, string format, IProgress<double> progress)
+        public async Task<bool> Download(string url, string outputFolder, string format, IProgress<double> progress)
         
         {
             ytdl.OutputFolder = outputFolder;
@@ -27,17 +28,14 @@ namespace Downloader
 
 
             var result = await ytdl.RunVideoDownload(url, overrideOptions: options, progress: progressBar);
-            if (result.Success)
-            {
-                MessageBox.Show("Video downloaded successful");
-            }
 
-        }
+            return result.Success;
+        }  
         public async Task<List<string>> GetVideoFormats(string url)
         {
             var standardQualities = new List<int> { 144, 240, 360, 480, 720, 1080, 1440, 2160 };
             var result = await ytdl.RunVideoDataFetch(url);
-            if (!result.Success)
+            if (!result.Success)    
             {
                 Console.WriteLine("Failed to get video info");
                 return new List<string>();
@@ -50,10 +48,26 @@ namespace Downloader
                 .Distinct()                          // убираем дубликаты // .Distinct() = 1080, 720, 1080 → 1080, 720
                 .OrderByDescending(h => h)           // сортируем от большего к меньшему
                 .ToList();
-
+          
             return qualities.Select(q => q.ToString()).ToList();
         }
+        public async Task<VideoInfo> GetInfo(string url)
+        {
+            var result = await ytdl.RunVideoDataFetch(url);
+            var title = result.Data.Title;
+            var duration = TimeSpan.FromSeconds(result.Data.Duration ?? 0).ToString(@"hh\:mm\:ss"); // конвертируем длительность из секунд в формат часы:минуты:секунды
+            var author = result.Data.Channel;
+            var thumbnail = result.Data.Thumbnail;
+            return new VideoInfo
+            {
+                Title = title,
+                Duration = duration,
+                Thumbnail = thumbnail,
+                Author = author,
+            };
 
+
+        }
 
 
         public async Task DownloadAudio(string url, string outputFolder, IProgress<double> progress)

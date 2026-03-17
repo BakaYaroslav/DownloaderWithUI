@@ -1,84 +1,122 @@
-﻿<Window x:Class="Downloader.MainWindow"
+﻿<Window x:Class="Downloader.MainWindow"  Background="#FF2B2B2B"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Downloader"
         mc:Ignorable="d"
-        Title="Downloader" Width="600" Height="420"
-        ResizeMode="NoResize">
-    <Grid Background="#2B2B2B">
-        <StackPanel VerticalAlignment="Top" Margin="30">
+        Title="Downloader" Width="600" Height="500"
+         MinWidth="600" MinHeight="500"
+        ResizeMode="CanResizeWithGrip"
+        Icon="/tools/DownloaderIcon.ico">
 
-            <Label Content="Download video from Youtube"
-                   Foreground="White" FontSize="18"
-                   HorizontalAlignment="Center" Margin="0,0,0,15"/>
+    <Grid Background="#2B2B2B" Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <Label x:Name="urlLabel" Content="Paste link here:" Foreground="DarkGray" FontSize="10"/>
+        <Label Grid.Row="0"
+               Content="Download video from Youtube"
+               Foreground="White" FontSize="18"
+               HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
-            <!-- Строка с url и кнопками -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBox x:Name="urlTable"
-                         TextChanged="urlTable_TextChanged"
-                         Grid.Column="0"
-                         Foreground="Gray" Background="#3C3F41"
-                         BorderBrush="#555" FontSize="14"
-                         Height="35" Padding="8,0"
-                         VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="typeBox"
-                          Grid.Column="1" Width="80" Height="35"
-                          Margin="10,0,0,0" Background="#3C3F41"/>
-                <ComboBox x:Name="qualityBox"
-                          Grid.Column="2" Width="80" Height="35"
-                          Margin="10,0,0,0" Background="#3C3F41"/>
-            </Grid>
+        <Label Grid.Row="1"
+               x:Name="urlLabel" Content="Paste link here:"
+               Foreground="DarkGray" FontSize="10"/>
 
-            <!-- Карточка превью -->
-            <Border  x:Name="previewCard" Visibility="Collapsed" Background="#3C3F41" CornerRadius="8"
-                    Margin="0,15,0,0" Padding="10">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="120"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                    <Image x:Name="thumbnail"
-                           Width="120" Height="70" Stretch="UniformToFill"/>
+            <TextBox x:Name="urlTable"
+                     TextChanged="urlTable_TextChanged"
+                     Grid.Column="0"
+                     Foreground="Gray" Background="#3C3F41"
+                     BorderBrush="#555" FontSize="14"
+                     Height="35" Padding="8,0"
+                     VerticalContentAlignment="Center"/>
 
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0"
-                                VerticalAlignment="Center">
-                        <TextBlock x:Name="videoTitle"
-                                   Foreground="White" FontSize="13"
-                                   FontWeight="Bold" TextWrapping="Wrap"/>
-                        <TextBlock x:Name="videoInfo"
-                                   Foreground="Gray" FontSize="11"
-                                   Margin="0,4,0,0"/>
-                    </StackPanel>
+            <ComboBox x:Name="typeBox"
+                      Grid.Column="1" Width="80" Height="35"
+                      Margin="10,0,0,0" Background="#3C3F41"
+                      Foreground="Black"/>
 
-                    <Button Grid.Column="2"
-                            Content="Download"
-                            Width="100" Height="35"
-                            Margin="10,0,0,0"
-                            Background="#FF0000" Foreground="White"
-                            BorderThickness="0"
-                            Click="Button_Click"/>
-                </Grid>
-            </Border>
+            <ComboBox x:Name="qualityBox"
+                      Grid.Column="2" Width="80" Height="35"
+                      Margin="10,0,0,0" Background="#3C3F41"
+                      Foreground="Black"/>
+        </Grid>
 
-            <!-- Прогресс -->
-            <ProgressBar x:Name="progressBar"
-                         Height="10" Margin="0,10,0,0"
-                         Background="#3C3F41" Foreground="Green"
-                         Minimum="0" Maximum="100" Value="0"/>
-            <Label x:Name="progressLabel"
-                   Foreground="White" FontSize="12" Content="0%" />
+        <ScrollViewer Grid.Row="3"
+                      VerticalScrollBarVisibility="Hidden"
+                      Margin="0,10,0,0">
+            <ItemsControl x:Name="videoList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#3C3F41" CornerRadius="8"
+                                Margin="0,5,0,0" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-        </StackPanel>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Image Source="{Binding Thumbnail}"
+                                           Width="120" Height="70"
+                                           Stretch="UniformToFill"/>
+
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}"
+                                                   Foreground="White" FontSize="13"
+                                                   FontWeight="Bold" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Duration}"
+                                                   Foreground="Gray" FontSize="11"
+                                                   Margin="0,4,0,0"/>
+                                        <TextBlock Text="{Binding Author}"
+                                                   Foreground="#888" FontSize="10"
+                                                   Margin="0,2,0,0"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="2"
+                                            Content="Download"
+                                            Width="100" Height="35"
+                                            Background="#FF0000" Foreground="White"
+                                            BorderThickness="0"
+                                            VerticalAlignment="Center"
+                                            Click="Button_Click"/>
+                                </Grid>
+
+                                <ProgressBar Grid.Row="1"
+                                             Value="{Binding Progress}"
+                                             Height="6" Margin="0,8,0,2"
+                                             Background="#2B2B2B"
+                                             Foreground="LimeGreen"
+                                             Minimum="0" Maximum="100"/>
+
+                                <TextBlock Grid.Row="2"
+                                           Text="{Binding Status}"
+                                           Foreground="#AAA" FontSize="10"
+                                           HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>

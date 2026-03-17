@@ -1,85 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
-
+using System.Collections.ObjectModel;
 namespace Downloader
 {
-   
+
     public partial class MainWindow : Window
     {
         VideoDownloader downloader = new VideoDownloader();
+        ObservableCollection<VideoInfo> videos = new ObservableCollection<VideoInfo>();
+        VideoInfo video = new VideoInfo();
         public MainWindow()
         {
             InitializeComponent();
             typeBox.ItemsSource = new List<string> { "Video", "Audio" };
             typeBox.SelectedIndex = 0;
+            videoList.ItemsSource = videos;
         }
         private async void urlTable_TextChanged(object sender, TextChangedEventArgs e)
         {
             string url = urlTable.Text.Trim();
 
-            if (url.Contains("youtube.com/watch"))
+            if (!url.Contains("youtube.com/watch?v="))
             {
-                urlLabel.Content = "Paste link here:";
+                urlLabel.Content = "Invalid URL or YOU!";
+                urlLabel.Foreground = Brushes.IndianRed;
+                return;
+
+            }
+            try
+            {
+                urlLabel.Content = "Wait...";
                 urlLabel.Foreground = Brushes.DarkGray;
                 var formats = await downloader.GetVideoFormats(url);
                 qualityBox.ItemsSource = formats;
                 qualityBox.SelectedIndex = 0;
                 var info = await downloader.GetInfo(url);
-
-                videoTitle.Text = info.Title;
-                videoInfo.Text = $"{info.Duration} · {info.Author}";
-
-                var bmp = new BitmapImage(new Uri(info.Thumbnail)); // превюшка видео
-                thumbnail.Source = bmp;
-
-                previewCard.Visibility = Visibility.Visible;
+                if (info == null) return;
+                info.Url = url;
+                videos.Add(info);
+                urlLabel.Content = "Paste link here: ";
             }
-            else
+            catch (Exception ex)
             {
-                urlLabel.Content = "Invalid link and YOU!";
+                urlLabel.Content = "Invalid URL or YOU!";
                 urlLabel.Foreground = Brushes.Red;
+
+
             }
-
         }
-
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-
+            var button = sender as Button;
+            var info = button?.DataContext as VideoInfo;
 
             string downFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-            string url = urlTable.Text;
+            string url = info.Url;
+
+            string quality = $"bestvideo[height<={qualityBox.SelectedItem}]+bestaudio/bestvideo+bestaudio/best";
             string type = typeBox.SelectedItem.ToString();
-            string quality = $"bestvideo[height={qualityBox.SelectedItem}]+bestaudio";
 
-            void updateProgress(double value)
-            {
-                progressBar.Value = value;
-                progressLabel.Content = $"{value:F1}%";
-            }
-
-            var progress = new Progress<double>(updateProgress);
            
+
+            var progress = new Progress<double>(value =>
+            {
+                if (value == 0) return;
+                {
+                    info.Progress = value;
+                    info.Status = $"{value:F1}%";
+                }
+            }); 
             if (type == "Video")
             {
-                await downloader.Download(url, downFolder, quality, progress);
+                bool success = await downloader.Download(url, downFolder, quality, progress);
+                info.Status = success ? "Downloaded!" : "Failed";
             }
             else if (type == "Audio")
             {
                 await downloader.DownloadAudio(url, downFolder, progress);
-              
+                info.Status = "Downloaded!";
             }
 
-            bool success = await downloader.Download(url, downFolder, quality, progress);
-            if (success)
-                progressLabel.Content = "Video Downloaded!";
-            else
-                progressLabel.Content = "Failed";
         }
     }
 }

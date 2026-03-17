@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="tools\DownloaderIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="YoutubeDLSharp" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="tools\DownloaderIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>

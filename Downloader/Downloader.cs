@@ -40,20 +40,33 @@ namespace Downloader
                 Console.WriteLine("Failed to get video info");
                 return new List<string>();
             }
+            try
+            {
+                var qualities = result.Data.Formats
+               .Where(f => f.Height != null)        // только форматы у которых есть высота  .where = foreach с условием { Height: 1080, Ext: "webm" }  → true
+               .Where(f => standardQualities.Contains(f.Height.Value)) // только форматы с высотой из списка стандартных  .Where = foreach с условием 1080 → true, 123 → false
+               .Select(f => f.Height.Value)         // берём только значение высоты  .Select = это foreach который что-то вытаскивает { Height: 1080, Ext: "webm" }  →  1080
+               .Distinct()                          // убираем дубликаты // .Distinct() = 1080, 720, 1080 → 1080, 720
+               .OrderByDescending(h => h)           // сортируем от большего к меньшему
+               .ToList();
+                return qualities.Select(q => q.ToString()).ToList();
+            }
+            catch (Exception)
+            {
+                return new List<string>();
 
-            var qualities = result.Data.Formats
-                .Where(f => f.Height != null)        // только форматы у которых есть высота  .where = foreach с условием { Height: 1080, Ext: "webm" }  → true
-                .Where(f => standardQualities.Contains(f.Height.Value)) // только форматы с высотой из списка стандартных  .Where = foreach с условием 1080 → true, 123 → false
-                .Select(f => f.Height.Value)         // берём только значение высоты  .Select = это foreach который что-то вытаскивает { Height: 1080, Ext: "webm" }  →  1080
-                .Distinct()                          // убираем дубликаты // .Distinct() = 1080, 720, 1080 → 1080, 720
-                .OrderByDescending(h => h)           // сортируем от большего к меньшему
-                .ToList();
+            }
+           
           
-            return qualities.Select(q => q.ToString()).ToList();
+           
         }
         public async Task<VideoInfo> GetInfo(string url)
         {
+
             var result = await ytdl.RunVideoDataFetch(url);
+            if (!result.Success || result.Data == null)
+                return null;
+
             var title = result.Data.Title;
             var duration = TimeSpan.FromSeconds(result.Data.Duration ?? 0).ToString(@"hh\:mm\:ss"); // конвертируем длительность из секунд в формат часы:минуты:секунды
             var author = result.Data.Channel;

@@ -10,14 +10,14 @@
         ResizeMode="CanResizeWithGrip"
         Icon="/tools/DownloaderIcon.ico">
 
-    <Grid Background="#2B2B2B" Margin="30">
+    <Grid Background="#2B2B2B" Margin="30" Cursor="">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+       
         <Label Grid.Row="0"
                Content="Download video from Youtube"
                Foreground="White" FontSize="18"
@@ -60,13 +60,29 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Background="#3C3F41" CornerRadius="8"
-                                Margin="0,5,0,0" Padding="10">
+        Margin="0,5,0,0" Padding="10">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
+
+                                <!-- Крестик поверх карточки, в правом верхнем углу -->
+                                <Button Grid.Row="0"
+                Content="✕"
+                Width="18" Height="18"
+                Background="Transparent"
+                Foreground="#888"
+                BorderThickness="0"
+                FontSize="11"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Cursor="Hand"
+                Panel.ZIndex="10"
+                Tag="{Binding}"
+                Click="RemoveCard_Click"
+                ToolTip="Удалить"/>
 
                                 <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>
@@ -76,47 +92,48 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Image Source="{Binding Thumbnail}"
-                                           Width="120" Height="70"
-                                           Stretch="UniformToFill"/>
+                   Width="120" Height="70"
+                   Stretch="UniformToFill"/>
 
                                     <StackPanel Grid.Column="1" Margin="10,0,0,0"
-                                                VerticalAlignment="Center">
+                        VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Title}"
-                                                   Foreground="White" FontSize="13"
-                                                   FontWeight="Bold" TextWrapping="Wrap"/>
+                           Foreground="White" FontSize="13"
+                           FontWeight="Bold" TextWrapping="Wrap"/>
                                         <TextBlock Text="{Binding Duration}"
-                                                   Foreground="Gray" FontSize="11"
-                                                   Margin="0,4,0,0"/>
+                           Foreground="Gray" FontSize="11"
+                           Margin="0,4,0,0"/>
                                         <TextBlock Text="{Binding Author}"
-                                                   Foreground="#888" FontSize="10"
-                                                   Margin="0,2,0,0"/>
+                           Foreground="#888" FontSize="10"
+                           Margin="0,2,0,0"/>
                                     </StackPanel>
 
                                     <Button Grid.Column="2"
-                                            Content="Download"
-                                            Width="100" Height="35"
-                                            Background="#FF0000" Foreground="White"
-                                            BorderThickness="0"
-                                            VerticalAlignment="Center"
-                                            Click="Button_Click"/>
+                    Content="Download"
+                    Width="100" Height="35"
+                    Background="#FF0000" Foreground="White"
+                    BorderThickness="0"
+                    VerticalAlignment="Center"
+                    Click="Button_Click"/>
                                 </Grid>
 
                                 <ProgressBar Grid.Row="1"
-                                             Value="{Binding Progress}"
-                                             Height="6" Margin="0,8,0,2"
-                                             Background="#2B2B2B"
-                                             Foreground="LimeGreen"
-                                             Minimum="0" Maximum="100"/>
+                     Value="{Binding Progress}"
+                     Height="6" Margin="0,8,0,2"
+                     Background="#2B2B2B"
+                     Foreground="LimeGreen"
+                     Minimum="0" Maximum="100"/>
 
                                 <TextBlock Grid.Row="2"
-                                           Text="{Binding Status}"
-                                           Foreground="#AAA" FontSize="10"
-                                           HorizontalAlignment="Right"/>
+                   Text="{Binding Status}"
+                   Foreground="#AAA" FontSize="10"
+                   HorizontalAlignment="Right"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-    </Grid>
+      
+        </Grid>
 </Window>

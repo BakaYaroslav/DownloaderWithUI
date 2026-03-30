@@ -10,7 +10,8 @@ namespace Downloader
         public string Thumbnail { get; set; }
         public string Author { get; set; }
         public string Url { get; set; }
-     
+
+
 
         private double _progress;
         public double Progress

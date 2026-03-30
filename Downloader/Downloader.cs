@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using YoutubeDLSharp;
@@ -11,31 +12,34 @@ namespace Downloader
         YoutubeDL ytdl = new YoutubeDL(); // это класс с помощью которого мы будем скачивать видео и получать информацию о виде
         public VideoDownloader()
         {
-            ytdl.YoutubeDLPath = @"tools\yt-dlp.exe";
-            ytdl.FFmpegPath = @"tools\ffmpeg-8.0.1-essentials_build\bin\ffmpeg.exe";
-          
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            ytdl.YoutubeDLPath = Path.Combine(baseDir, @"tools\yt-dlp.exe");
+            ytdl.FFmpegPath = Path.Combine(baseDir, @"tools\ffmpeg-8.0.1-essentials_build\bin\ffmpeg.exe");
+
+
         }
-        
+
         // async говорит: "этот метод будет ждать не замораживая программу"
         public async Task<bool> Download(string url, string outputFolder, string format, IProgress<double> progress)
-        
+
         {
             ytdl.OutputFolder = outputFolder;
             var options = new OptionSet(); // это класс, который содержит все настройки для загрузки видео.
             options.Format = format;
+            options.AddCustomOption("--merge-output-format", "mp4");
+            options.AddCustomOption("--recode-video", "mp4");
+
 
             var progressBar = new Progress<DownloadProgress>(p => progress.Report(p.Progress * 100));
-
-
             var result = await ytdl.RunVideoDownload(url, overrideOptions: options, progress: progressBar);
 
             return result.Success;
-        }  
+        }
         public async Task<List<string>> GetVideoFormats(string url)
         {
             var standardQualities = new List<int> { 144, 240, 360, 480, 720, 1080, 1440, 2160 };
             var result = await ytdl.RunVideoDataFetch(url);
-            if (!result.Success)    
+            if (!result.Success)
             {
                 Console.WriteLine("Failed to get video info");
                 return new List<string>();
@@ -56,9 +60,9 @@ namespace Downloader
                 return new List<string>();
 
             }
-           
-          
-           
+
+
+
         }
         public async Task<VideoInfo> GetInfo(string url)
         {
@@ -93,7 +97,7 @@ namespace Downloader
 
             var result = await ytdl.RunAudioDownload(url, AudioConversionFormat.Mp3, progress: progressBar);
 
-           
+
 
         }
     }

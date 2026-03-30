@@ -18,6 +18,10 @@ namespace Downloader
             typeBox.ItemsSource = new List<string> { "Video", "Audio" };
             typeBox.SelectedIndex = 0;
             videoList.ItemsSource = videos;
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string ffmpegPath = Path.Combine(baseDir, @"tools\ffmpeg-8.0.1-essentials_build\bin\ffmpeg.exe");
+                string ytdlPath = Path.Combine(baseDir, @"tools\yt-dlp.exe");
+           
         }
         private async void urlTable_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -59,10 +63,10 @@ namespace Downloader
             string downFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             string url = info.Url;
 
-            string quality = $"bestvideo[height<={qualityBox.SelectedItem}]+bestaudio/bestvideo+bestaudio/best";
+            string quality = $"bestvideo[height<={qualityBox.SelectedItem}][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<={qualityBox.SelectedItem}]+bestaudio/best";
             string type = typeBox.SelectedItem.ToString();
 
-           
+
 
             var progress = new Progress<double>(value =>
             {
@@ -71,7 +75,7 @@ namespace Downloader
                     info.Progress = value;
                     info.Status = $"{value:F1}%";
                 }
-            }); 
+            });
             if (type == "Video")
             {
                 bool success = await downloader.Download(url, downFolder, quality, progress);
@@ -83,6 +87,16 @@ namespace Downloader
                 info.Status = "Downloaded!";
             }
 
+        }
+
+        private void RemoveCard_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn?.Tag is VideoInfo item)
+            {
+                var list = videoList.ItemsSource as ObservableCollection<VideoInfo>;
+                list?.Remove(item);
+            }
         }
     }
 }

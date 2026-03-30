@@ -68,21 +68,22 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
-                                <!-- Крестик поверх карточки, в правом верхнем углу -->
+
                                 <Button Grid.Row="0"
-                Content="✕"
-                Width="18" Height="18"
-                Background="Transparent"
-                Foreground="#888"
-                BorderThickness="0"
-                FontSize="11"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Cursor="Hand"
-                Panel.ZIndex="10"
-                Tag="{Binding}"
-                Click="RemoveCard_Click"
-                ToolTip="Удалить"/>
+                                        Content="✕"
+                                        Width="18" Height="18"
+                                        Background="Transparent"
+                                        Foreground="#888"
+                                        BorderThickness="0"
+                                        FontSize="11"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Cursor="Hand"
+                                        Panel.ZIndex="10"
+                                        Margin="0,-6,0,0"
+                                        Tag="{Binding}"
+                                        Click="RemoveCard_Click"
+                                        ToolTip="Delete"/>     
 
                                 <Grid Grid.Row="0">
                                     <Grid.ColumnDefinitions>

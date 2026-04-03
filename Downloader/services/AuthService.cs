@@ -33,6 +33,26 @@ namespace Downloader.services
             }
         }
 
+        public bool Login(string login, string password)
+        {
+            try
+            {
+                using var connection = new MySqlConnection(DatabaseConfig.ConnectionString);
+                connection.Open();
+                var cmd = new MySqlCommand("SELECT COUNT(*) FROM users " +
+                                            "WHERE login = @login AND password = @password",
+                connection);
+                cmd.Parameters.AddWithValue("@login", login);
+                cmd.Parameters.AddWithValue("@password", password);
+                long count = (long)cmd.ExecuteScalar();
+                return count > 0;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 }
 

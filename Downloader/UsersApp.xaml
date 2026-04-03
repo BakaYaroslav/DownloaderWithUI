@@ -13,39 +13,30 @@
             <Border.Effect>
                 <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="0"/>
             </Border.Effect>
-            <StackPanel>
+            <StackPanel Cursor="">
                 <TextBlock Text="Downloader" FontSize="30" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-                <Grid Margin="0,0,0,20" Cursor="">
-                    <Button Content="Login" HorizontalAlignment="Left" Foreground="White" Height="40" Width="120" Style="{StaticResource MaterialDesignFlatButton}" Margin="340,0,0,0"/>
-                    <Button Content="Registration" Background="#33FFFFFF" HorizontalAlignment="Left" Foreground="White" Height="40" Width="120" Style="{StaticResource MaterialDesignFlatButton}" Cursor="Hand"/>
+                <Grid Margin="0,0,0,20">
+                    <Button Content="Login" x:Name="LoginBtn" Click="LoginBtn_Click" HorizontalAlignment="Left" Foreground="White" Height="40" Width="120" Style="{StaticResource MaterialDesignFlatButton}" Margin="340,0,0,0"/>
+                    <Button Content="Registration" x:Name="RegBtn" Click="RegBtn_Click" Background="#33FFFFFF" HorizontalAlignment="Left" Foreground="White" Height="40" Width="120" Style="{StaticResource MaterialDesignFlatButton}" Cursor="Hand"/>
                 </Grid>
+
                 <TextBox x:Name="LoginTextBox" KeyDown="LoginTextBox_KeyDown" materialDesign:HintAssist.Hint="Enter login" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <TextBlock x:Name="LoginError" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+
+                <PasswordBox x:Name="firstPassword" KeyDown="firstPassword_KeyDown" materialDesign:HintAssist.Hint="Enter password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                <TextBlock x:Name="PasswordError" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+
+               
+                <StackPanel x:Name="RegPanel">
+                    <PasswordBox x:Name="secondPassword" KeyDown="secondPassword_KeyDown" materialDesign:HintAssist.Hint="confirm password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                    <TextBlock x:Name="PasswordError2" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+                    <TextBox x:Name="EmailTextBox" KeyDown="EmailTextBox_KeyDown" materialDesign:HintAssist.Hint="Email" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <TextBlock x:Name="EmailError" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+                </StackPanel>
+
                 
-                <TextBlock x:Name="LoginError" 
-                               Foreground="IndianRed" 
-                               FontSize="11"
-                               Visibility="Collapsed"
-                               Margin="0,0,0,5"/>
-                <PasswordBox x:Name="firstPassword" KeyDown="firstPassword_KeyDown"  materialDesign:HintAssist.Hint="Enter password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" Cursor=""/>
-                <TextBlock x:Name="PasswordError" 
-                           Foreground="IndianRed" 
-                           FontSize="11"
-                           Visibility="Collapsed"
-                           Margin="0,0,0,5"/>
-                <PasswordBox x:Name="secondPassword" KeyDown="secondPassword_KeyDown" materialDesign:HintAssist.Hint="confirm password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
-                <TextBlock x:Name="PasswordError2" 
-                           Foreground="IndianRed" 
-                           FontSize="11"
-                           Visibility="Collapsed"
-                           Margin="0,0,0,5"/>
-                <TextBox x:Name="EmailTextBox" KeyDown="EmailTextBox_KeyDown" materialDesign:HintAssist.Hint="Email" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-                <TextBlock x:Name="EmailError" 
-                           Foreground="IndianRed" 
-                           FontSize="11"
-                           Visibility="Collapsed"
-                           Margin="0,0,0,5"/>  
-                <Button Content="Sign Up" Background="#33FFFFFF"  Foreground="White" Height="40" Width="457" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,20,0,0" 
-                        Click="Button_Reg_Click"/>
+
+                <Button x:Name="ActionBtn" Content="Sign Up" Background="#33FFFFFF" Foreground="White" Height="40" Width="457" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,20,0,0" Click="ActionBtn_Click"/>
             </StackPanel>
         </Border>
     </Grid>

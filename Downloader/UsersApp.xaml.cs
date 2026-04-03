@@ -75,7 +75,9 @@ namespace Downloader
 
                 if (success)
                 {
-                    MessageBox.Show("Registration successful!");
+                    var mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    this.Close();
                 }
                 else
                 {
@@ -94,6 +96,9 @@ namespace Downloader
         {
             if (e.Key == Key.Enter)
                 secondPassword.Focus();
+            if (LoginBtn_Click != null) {
+                Button_Reg_Click(sender, e);
+            }
         }
 
         private void secondPassword_KeyDown(object sender, KeyEventArgs e)
@@ -107,6 +112,55 @@ namespace Downloader
             if (e.Key == Key.Enter)
                 Button_Reg_Click(sender, e); 
         }
+
+        private void LoginBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RegPanel.Visibility = Visibility.Collapsed;
+            ActionBtn.Content = "Log In";
+            var color = (Color)ColorConverter.ConvertFromString("#33FFFFFF");
+            LoginBtn.Background = new SolidColorBrush(color);
+            RegBtn.Background = Brushes.Transparent;
+            LoginError.Text = "";
+            PasswordError.Text = "";
+            PasswordError2.Text = "";
+            EmailError.Text = "";
+        }
+
+        private void RegBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RegPanel.Visibility = Visibility.Visible;
+            ActionBtn.Content = "Sign In";
+            LoginBtn.Background = Brushes.Transparent;
+            var color = (Color)ColorConverter.ConvertFromString("#33FFFFFF");
+            RegBtn.Background = new SolidColorBrush(color);
+            LoginError.Text = "";
+            PasswordError.Text = "";
+            PasswordError2.Text = "";
+            EmailError.Text = "";
+
+
+        }
+        private void ActionBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (ActionBtn.Content.ToString() == "Sign In")
+                Button_Reg_Click(sender, e);
+            else
+            {
+                bool success = authService.Login(LoginTextBox.Text, firstPassword.Password);
+                if (success)
+                {
+                    var mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    this.Close();
+                }
+                else
+                {
+                    PasswordError.Text = "Invalid login or password";
+                    PasswordError.Visibility = Visibility.Visible;
+                }
+            }
+        }
     }
 }
+
 

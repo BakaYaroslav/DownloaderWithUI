@@ -1,3 +1,9 @@
-*.xaml linguist-language=C#
+*.xaml linguist-language=XAML
 *.xaml.cs linguist-language=C#
+
 *.html linguist-detectable=false
+*.htm linguist-detectable=false
+*.css linguist-detectable=false
+
+bin/* linguist-generated=true
+obj/* linguist-generated=true

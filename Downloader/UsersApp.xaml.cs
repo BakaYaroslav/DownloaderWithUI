@@ -95,10 +95,14 @@ namespace Downloader
         private void firstPassword_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
-                secondPassword.Focus();
-            if (LoginBtn_Click != null) {
-                Button_Reg_Click(sender, e);
+            {
+              
+                if (RegPanel.Visibility == Visibility.Visible)
+                    secondPassword.Focus();
+                else
+                    ActionBtn_Click(sender, e);
             }
+              
         }
 
         private void secondPassword_KeyDown(object sender, KeyEventArgs e)

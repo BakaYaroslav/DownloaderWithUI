@@ -101,7 +101,7 @@ namespace Downloader
                     secondPassword.Focus();
                 else
                     ActionBtn_Click(sender, e);
-            }
+            } 
                 
         }
 

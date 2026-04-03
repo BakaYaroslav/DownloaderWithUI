@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Downloader"
         mc:Ignorable="d"
         Title="Downloader" Width="600" Height="500"
-         MinWidth="600" MinHeight="500"
+        MinWidth="600" MinHeight="500"
         ResizeMode="CanResizeWithGrip"
         Icon="/tools/DownloaderIcon.ico">
 
@@ -45,12 +45,12 @@
             <ComboBox x:Name="typeBox"
                       Grid.Column="1" Width="80" Height="35"
                       Margin="10,0,0,0" Background="#3C3F41"
-                      Foreground="Black"/>
+                      Foreground="white" VerticalAlignment="Bottom"/>
 
             <ComboBox x:Name="qualityBox"
                       Grid.Column="2" Width="80" Height="35"
                       Margin="10,0,0,0" Background="#3C3F41"
-                      Foreground="Black"/>
+                      Foreground="White"/>
         </Grid>
 
         <ScrollViewer Grid.Row="3"
@@ -60,7 +60,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Background="#3C3F41" CornerRadius="8"
-        Margin="0,5,0,0" Padding="10">
+                                Margin="0,5,0,0" Padding="10">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>

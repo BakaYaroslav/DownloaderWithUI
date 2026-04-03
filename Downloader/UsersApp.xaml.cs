@@ -102,7 +102,7 @@ namespace Downloader
                 else
                     ActionBtn_Click(sender, e);
             }
-              
+                
         }
 
         private void secondPassword_KeyDown(object sender, KeyEventArgs e)

@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace Downloader
 {
@@ -21,6 +22,8 @@ namespace Downloader
         {
             InitializeComponent();
         }
+       
+       
 
         private void Button_Reg_Click(object sender, RoutedEventArgs e)
         {
@@ -75,7 +78,8 @@ namespace Downloader
 
                 if (success)
                 {
-                    var mainWindow = new MainWindow();
+                  
+                    var mainWindow = new MainWindow(login);
                     mainWindow.Show();
                     this.Close();
                 }
@@ -90,6 +94,8 @@ namespace Downloader
         {
             if (e.Key == Key.Enter)
                 firstPassword.Focus();
+            
+
         }
 
         private void firstPassword_KeyDown(object sender, KeyEventArgs e)
@@ -99,22 +105,27 @@ namespace Downloader
               
                 if (RegPanel.Visibility == Visibility.Visible)
                     secondPassword.Focus();
+                
                 else
                     ActionBtn_Click(sender, e);
-            } 
-                
+                    
+            }
+          
+
         }
 
         private void secondPassword_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
                 EmailTextBox.Focus();
+          
         }
 
         private void EmailTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
-                Button_Reg_Click(sender, e); 
+                Button_Reg_Click(sender, e);
+          
         }
 
         private void LoginBtn_Click(object sender, RoutedEventArgs e)
@@ -146,14 +157,17 @@ namespace Downloader
         }
         private void ActionBtn_Click(object sender, RoutedEventArgs e)
         {
+            string SessionFile = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "session.txt");
             if (ActionBtn.Content.ToString() == "Sign In")
                 Button_Reg_Click(sender, e);
             else
             {
                 bool success = authService.Login(LoginTextBox.Text, firstPassword.Password);
+                File.WriteAllText(SessionFile, LoginTextBox.Text);
                 if (success)
                 {
-                    var mainWindow = new MainWindow();
+                    string login = File.ReadAllText(SessionFile);
+                    var mainWindow = new MainWindow(login);
                     mainWindow.Show();
                     this.Close();
                 }

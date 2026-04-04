@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
+using Downloader.services;
 namespace Downloader
 {
 
@@ -12,17 +13,28 @@ namespace Downloader
         VideoDownloader downloader = new VideoDownloader();
         ObservableCollection<VideoInfo> videos = new ObservableCollection<VideoInfo>();
         VideoInfo video = new VideoInfo();
-        public MainWindow()
+
+        public string CurrentLogin { get; set; }
+
+        public MainWindow(string login)
         {
             InitializeComponent();
+            CurrentLogin = login;
             typeBox.ItemsSource = new List<string> { "Video", "Audio" };
             typeBox.SelectedIndex = 0;
             videoList.ItemsSource = videos;
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string ffmpegPath = Path.Combine(baseDir, @"tools\ffmpeg-8.0.1-essentials_build\bin\ffmpeg.exe");
-                string ytdlPath = Path.Combine(baseDir, @"tools\yt-dlp.exe");
-           
+
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+        
+            var saved = VideoService.LoadVideos(CurrentLogin);
+            foreach (var v in saved)
+                videos.Add(v);
         }
+       
+       
+
+
         private async void urlTable_TextChanged(object sender, TextChangedEventArgs e)
         {
             string url = urlTable.Text.Trim();
@@ -44,8 +56,14 @@ namespace Downloader
                 var info = await downloader.GetInfo(url);
                 if (info == null) return;
                 info.Url = url;
-                videos.Add(info);
+             
                 urlLabel.Content = "Paste link here: ";
+               
+                info.VideoId = url.Split("v=")[1].Split("&")[0];
+
+                VideoService.SaveVideo(CurrentLogin, info);
+                videos.Add(info);
+
             }
             catch (Exception ex)
             {
@@ -96,6 +114,7 @@ namespace Downloader
             {
                 var list = videoList.ItemsSource as ObservableCollection<VideoInfo>;
                 list?.Remove(item);
+                VideoService.DeleteVideo(CurrentLogin, item);
             }
         }
     }

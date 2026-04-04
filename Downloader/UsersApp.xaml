@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Downloader"
         mc:Ignorable="d"
-        xmlns:materialDesignInternal="http://materialdesigninxaml.net/winfx/xaml/themes-internal"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Authorization" Height="500" Width="600" Cursor="">
     <Grid Background="#2B2B2B">

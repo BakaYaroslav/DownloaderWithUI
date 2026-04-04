@@ -11,6 +11,13 @@ namespace Downloader
         public string Author { get; set; }
         public string Url { get; set; }
 
+        public string VideoId { get; set; }
+
+        public string ThumbnailUrl
+        {
+            get { return "https://img.youtube.com/vi/" + VideoId + "/mqdefault.jpg"; }
+
+        }
 
 
         private double _progress;
@@ -26,7 +33,7 @@ namespace Downloader
             get => _status;
             set { _status = value; OnPropertyChanged(nameof(Status)); }
         }
-      
+       
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

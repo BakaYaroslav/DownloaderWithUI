@@ -26,7 +26,7 @@ namespace Downloader
             ytdl.OutputFolder = outputFolder;
             var options = new OptionSet(); // это класс, который содержит все настройки для загрузки видео.
             options.Format = format;
-            options.AddCustomOption("--merge-output-format", "mp4");
+           
             options.AddCustomOption("--recode-video", "mp4");
 
 

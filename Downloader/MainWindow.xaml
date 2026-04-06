@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-       
+
         <Label Grid.Row="0"
                Content="Download video from Youtube"
                Foreground="White" FontSize="18"
@@ -26,6 +26,12 @@
         <Label Grid.Row="1"
                x:Name="urlLabel" Content="Paste link here:"
                Foreground="DarkGray" FontSize="10"/>
+        <Label Grid.Row="1"
+        x:Name="Format" Content="Format"
+        Foreground="DarkGray" FontSize="10" Margin="372,0,101,0"/>
+        <Label Grid.Row="1"
+             x:Name="Quality" Content="Quality"
+             Foreground="DarkGray" FontSize="10" Margin="463,0,10,0"/>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -106,10 +112,13 @@
                            FontWeight="Bold" TextWrapping="Wrap"/>
                                         <TextBlock Text="{Binding Duration}"
                            Foreground="Gray" FontSize="11"
-                           Margin="0,4,0,0"/>
+                           Margin="0,6,0,0"/>
                                         <TextBlock Text="{Binding Author}"
                            Foreground="#888" FontSize="10"
-                           Margin="0,2,0,0"/>
+                           Margin="0,4,0,0"/>
+                                        <TextBlock Text="{Binding FileSizeDisplay}"
+                            Foreground="#888" FontSize="10"
+                            Margin="0,2,0,0"/>   
                                     </StackPanel>
 
                                     <Button Grid.Column="2"
@@ -141,6 +150,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-      
-        </Grid>
+
+    </Grid>
 </Window>

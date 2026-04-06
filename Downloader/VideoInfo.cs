@@ -13,6 +13,25 @@ namespace Downloader
 
         public string VideoId { get; set; }
 
+        public string Format { get; set; }
+
+
+        private double _fileSizeMb;
+        public double FileSizeMb
+        {
+            get => _fileSizeMb;
+            set { _fileSizeMb = value; OnPropertyChanged(nameof(FileSizeMb)); OnPropertyChanged(nameof(FileSizeDisplay)); }
+        }
+
+        private string _quality;
+        public string Quality
+        {
+            get => _quality;
+            set { _quality = value; OnPropertyChanged(nameof(Quality)); OnPropertyChanged(nameof(FileSizeDisplay)); }
+        }
+
+        public string FileSizeDisplay => _fileSizeMb > 0 ? $"{_fileSizeMb:F1} MB - {_quality} - {Format}" : "";
+
         public string ThumbnailUrl
         {
             get { return "https://img.youtube.com/vi/" + VideoId + "/mqdefault.jpg"; }

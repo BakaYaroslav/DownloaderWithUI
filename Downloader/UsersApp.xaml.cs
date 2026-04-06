@@ -158,14 +158,15 @@ namespace Downloader
         private void ActionBtn_Click(object sender, RoutedEventArgs e)
         {
             string SessionFile = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "session.txt");
-            if (ActionBtn.Content.ToString() == "Sign In")
-                Button_Reg_Click(sender, e);
-            else
+            if (ActionBtn.Content.ToString() == "Log In")
             {
-                bool success = authService.Login(LoginTextBox.Text, firstPassword.Password);
+                Button_Reg_Click(sender, e);
                 File.WriteAllText(SessionFile, LoginTextBox.Text);
+                bool success = authService.Login(LoginTextBox.Text, firstPassword.Password);
+
                 if (success)
                 {
+
                     string login = File.ReadAllText(SessionFile);
                     var mainWindow = new MainWindow(login);
                     mainWindow.Show();
@@ -177,6 +178,7 @@ namespace Downloader
                     PasswordError.Visibility = Visibility.Visible;
                 }
             }
+
         }
     }
 }

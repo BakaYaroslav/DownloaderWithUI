@@ -39,7 +39,7 @@ namespace Downloader
         {
             string url = urlTable.Text.Trim();
 
-            if (!url.Contains("youtube.com/watch?v="))
+            if (!url.Contains("youtube.com/watch"))
             {
                 urlLabel.Content = "Invalid URL or YOU!";
                 urlLabel.Foreground = Brushes.IndianRed;
@@ -48,7 +48,7 @@ namespace Downloader
             }
             try
             {
-                urlLabel.Content = "Wait...";
+                urlLabel.Content = "Get video info...";
                 urlLabel.Foreground = Brushes.DarkGray;
                 var formats = await downloader.GetVideoFormats(url);
                 qualityBox.ItemsSource = formats;
@@ -81,9 +81,11 @@ namespace Downloader
             string downFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             string url = info.Url;
 
-            string quality = $"bestvideo[height<={qualityBox.SelectedItem}][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<={qualityBox.SelectedItem}]+bestaudio/best";
+            string selectedQuality = qualityBox.SelectedItem?.ToString() ?? "1080";
+            string quality = $"bestvideo[height<={selectedQuality}][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<={selectedQuality}]+bestaudio/best";
+            info.Quality = selectedQuality + "p";
             string type = typeBox.SelectedItem.ToString();
-
+            info.Format = type == "Video" ? "mp4" : "mp3";
 
 
             var progress = new Progress<double>(value =>
@@ -97,13 +99,25 @@ namespace Downloader
             if (type == "Video")
             {
                 bool success = await downloader.Download(url, downFolder, quality, progress);
-                info.Status = success ? "Downloaded!" : "Failed";
+                if (success)
+                {
+                    var file = Directory.GetFiles(downFolder, "*.mp4")
+                        .Select(f => new FileInfo(f))
+                        .OrderByDescending(f => f.LastWriteTime)
+                        .FirstOrDefault();
+
+                    info.FileSizeMb = file != null ? file.Length / (1024.0 * 1024.0) : 0;
+                    VideoService.UpdateFileSize(CurrentLogin, info);
+                    info.Status = "Downloaded!";
+                }
+                else info.Status = "Failed";
             }
             else if (type == "Audio")
             {
                 await downloader.DownloadAudio(url, downFolder, progress);
                 info.Status = "Downloaded!";
             }
+
 
         }
 
@@ -112,6 +126,7 @@ namespace Downloader
             var btn = sender as Button;
             if (btn?.Tag is VideoInfo item)
             {
+
                 var list = videoList.ItemsSource as ObservableCollection<VideoInfo>;
                 list?.Remove(item);
                 VideoService.DeleteVideo(CurrentLogin, item);

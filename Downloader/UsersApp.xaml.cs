@@ -3,14 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.IO;
+using System.Text.Json;
 
 namespace Downloader
 {
@@ -18,11 +14,13 @@ namespace Downloader
     public partial class UsersApp : Window
     {
         private AuthService authService = new AuthService();
+
+        public bool IsAddingAccount { get; set; } = false;
         public UsersApp()
         {
             InitializeComponent();
         }
-       
+     
        
 
         private void Button_Reg_Click(object sender, RoutedEventArgs e)
@@ -75,6 +73,7 @@ namespace Downloader
 
                
                bool success = authService.Register(login, password, email);
+              
 
                 if (success)
                 {
@@ -157,20 +156,46 @@ namespace Downloader
         }
         private void ActionBtn_Click(object sender, RoutedEventArgs e)
         {
-            string SessionFile = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "session.txt");
+            string SessionFile = System.IO.Path.Combine(
+                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                 "Downloader",
+                 "session.txt"
+             );
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SessionFile));
+
             if (ActionBtn.Content.ToString() == "Log In")
             {
-                Button_Reg_Click(sender, e);
-                File.WriteAllText(SessionFile, LoginTextBox.Text);
-                bool success = authService.Login(LoginTextBox.Text, firstPassword.Password);
+                string login = LoginTextBox.Text.Trim();
+                string password = firstPassword.Password.Trim();
+
+                bool success = authService.Login(login, password);
 
                 if (success)
                 {
+                    SessionService.AddAccount(login);
 
-                    string login = File.ReadAllText(SessionFile);
-                    var mainWindow = new MainWindow(login);
-                    mainWindow.Show();
-                    this.Close();
+                    if (IsAddingAccount)
+                    {
+                        // Знаходимо існуючий MainWindow і переключаємо акаунт
+                        var mainWindow = Application.Current.Windows
+                            .OfType<MainWindow>()
+                            .FirstOrDefault();
+
+                        if (mainWindow != null)
+                        {
+                            mainWindow.SwitchToAccount(login);
+                            mainWindow.Activate(); // повертаємо фокус
+                        }
+
+                        this.Close(); // просто закриваємо вікно логіну
+                    }
+                    else
+                    {
+                        // Звичайний логін — відкриваємо новий MainWindow
+                        var mainWindow = new MainWindow(login);
+                        mainWindow.Show();
+                        this.Close();
+                    }
                 }
                 else
                 {
@@ -178,7 +203,10 @@ namespace Downloader
                     PasswordError.Visibility = Visibility.Visible;
                 }
             }
-
+            else if (ActionBtn.Content.ToString() == "Sign In")
+            {
+                Button_Reg_Click(sender, e);
+            }
         }
     }
 }

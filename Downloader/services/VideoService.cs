@@ -52,18 +52,20 @@ namespace Downloader.services
                 });
             } return list;
         }
-        public static void UpdateFileSize(string login, VideoInfo video)
+        public static void UpdateAllInfo(string login, VideoInfo video)
         {
             using var connection = new MySqlConnection(DatabaseConfig.ConnectionString);
             connection.Open();
             var cmd = new MySqlCommand(
-               "UPDATE videos SET file_size_mb = @size, quality = @quality WHERE login = @login AND url = @url AND format = @format",
+                @"UPDATE videos 
+          SET file_size_mb = @size, quality = @quality, format = @format
+          WHERE login = @login AND url = @url",
                 connection);
             cmd.Parameters.AddWithValue("@size", video.FileSizeMb);
-            cmd.Parameters.AddWithValue("@login", login);
-            cmd.Parameters.AddWithValue("@url", video.Url);
             cmd.Parameters.AddWithValue("@quality", video.Quality ?? "");
             cmd.Parameters.AddWithValue("@format", video.Format ?? "");
+            cmd.Parameters.AddWithValue("@login", login);
+            cmd.Parameters.AddWithValue("@url", video.Url);
             cmd.ExecuteNonQuery();
         }
         public static void DeleteVideo(string login, VideoInfo video)

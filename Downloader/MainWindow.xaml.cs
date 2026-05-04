@@ -14,6 +14,8 @@ namespace Downloader
         ObservableCollection<VideoInfo> videos = new ObservableCollection<VideoInfo>();
         VideoInfo video = new VideoInfo();
 
+
+
         public string CurrentLogin { get; set; }
 
         public MainWindow(string login)
@@ -23,32 +25,120 @@ namespace Downloader
             typeBox.ItemsSource = new List<string> { "Video", "Audio" };
             typeBox.SelectedIndex = 0;
             videoList.ItemsSource = videos;
+            InitialsText.Text = GetInitial(login);
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
-        
+            LoadVideosForCurrentUser();
+        }
+
+        private string GetInitial(string login)
+        {
+            if (string.IsNullOrEmpty(login)) return "?";
+            return login[0].ToString().ToUpper();
+        }
+        private void LoadVideosForCurrentUser()
+        {
+            videos.Clear(); 
             var saved = VideoService.LoadVideos(CurrentLogin);
             foreach (var v in saved)
                 videos.Add(v);
         }
-       
-       
 
+        public void SwitchToAccount(string login)
+        {
+            CurrentLogin = login;
+            SessionService.SwitchAccount(login); // сохраняем session.json
+            LoadVideosForCurrentUser();         
+                                            
+        }
+        public void RemoveCurrentAccount()
+        {
+            bool noAccountsLeft = SessionService.RemoveAccount(CurrentLogin);
 
+            if (noAccountsLeft)
+            {
+                new UsersApp().Show();
+                this.Close();
+                return;
+            }
+
+            // если аккаунты остались, переключаемся на другой
+            var data = SessionService.Load();
+            SwitchToAccount(data.Active);
+        }
+        private void ProfileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentLoginText.Text = CurrentLogin;
+
+            var data = SessionService.Load();
+            AccountsList.ItemsSource = data.Saved.Where(a => a != CurrentLogin).ToList();
+
+            var allVideos = VideoService.LoadVideos(CurrentLogin);
+            double totalMb = allVideos.Sum(v => v.FileSizeMb);
+            StatsText.Text = $"{allVideos.Count} downloaded videos · {totalMb:F1} MB";
+
+            ProfilePopup.IsOpen = !ProfilePopup.IsOpen;
+        }
+
+        private void SwitchAccount_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            string login = btn?.Tag?.ToString();
+            if (login == null) return;
+
+            ProfilePopup.IsOpen = false;
+            SwitchToAccount(login);
+            InitialsText.Text = GetInitial(login);
+        }
+
+        private void AddAccount_Click(object sender, RoutedEventArgs e)
+        {
+            ProfilePopup.IsOpen = false;
+
+            var existing = Application.Current.Windows
+                .OfType<UsersApp>()
+                .FirstOrDefault();
+
+            if (existing != null)
+            {
+                existing.Activate();
+                return;
+            }
+
+            var loginWindow = new UsersApp();
+            loginWindow.IsAddingAccount = true; 
+            loginWindow.Show();
+        }
+
+        private void RemoveAccount_Click(object sender, RoutedEventArgs e)
+        {
+            ProfilePopup.IsOpen = false;
+            RemoveCurrentAccount();
+        }
+
+        private void LogOut_Click(object sender, RoutedEventArgs e)
+        {
+            SessionService.SwitchAccount("");
+            new UsersApp().Show();
+            this.Close();
+        }
+
+       
         private async void urlTable_TextChanged(object sender, TextChangedEventArgs e)
         {
             string url = urlTable.Text.Trim();
 
             if (!url.Contains("youtube.com/watch"))
             {
-                urlLabel.Content = "Invalid URL or YOU!";
+                urlLabel.Text = "Invalid URL or YOU!";
                 urlLabel.Foreground = Brushes.IndianRed;
                 return;
 
             }
             try
             {
-                urlLabel.Content = "Get video info...";
+                urlLabel.Text = "Get video info...";
                 urlLabel.Foreground = Brushes.DarkGray;
                 var formats = await downloader.GetVideoFormats(url);
                 qualityBox.ItemsSource = formats;
@@ -57,7 +147,7 @@ namespace Downloader
                 if (info == null) return;
                 info.Url = url;
              
-                urlLabel.Content = "Paste link here: ";
+                urlLabel.Text = "Paste link here: ";
                
                 info.VideoId = url.Split("v=")[1].Split("&")[0];
 
@@ -67,7 +157,7 @@ namespace Downloader
             }
             catch (Exception ex)
             {
-                urlLabel.Content = "Invalid URL or YOU!";
+                urlLabel.Text = "Invalid URL or YOU!";
                 urlLabel.Foreground = Brushes.Red;
 
 
@@ -107,7 +197,7 @@ namespace Downloader
                         .FirstOrDefault();
 
                     info.FileSizeMb = file != null ? file.Length / (1024.0 * 1024.0) : 0;
-                    VideoService.UpdateFileSize(CurrentLogin, info);
+                    VideoService.UpdateAllInfo(CurrentLogin, info);
                     info.Status = "Downloaded!";
                 }
                 else info.Status = "Failed";

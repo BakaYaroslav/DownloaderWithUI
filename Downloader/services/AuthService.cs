@@ -24,7 +24,7 @@ namespace Downloader.services
                 cmd.Parameters.AddWithValue("@password", password);
                 cmd.Parameters.AddWithValue("@email", email);
 
-                cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery(); // Выполняет запрос на вставку данных в таблицу users
                 return true;
             }
             catch
@@ -44,8 +44,9 @@ namespace Downloader.services
                 connection);
                 cmd.Parameters.AddWithValue("@login", login);
                 cmd.Parameters.AddWithValue("@password", password);
-                long count = (long)cmd.ExecuteScalar();
-                return count > 0;
+                long count = (long)cmd.ExecuteScalar(); // проверяет, существует ли пользователь с таким логином и паролем
+                cmd.ExecuteNonQuery();
+                return count > 0; // если count больше 0, значит пользователь с таким логином и паролем существует, и мы возвращаем true, иначе false
             }
             catch
             {

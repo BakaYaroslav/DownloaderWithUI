@@ -10,28 +10,174 @@
         ResizeMode="CanResizeWithGrip"
         Icon="/tools/DownloaderIcon.ico">
 
-    <Grid Background="#2B2B2B" Margin="30" Cursor="">
+    <Grid Background="#2B2B2B" Margin="30">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
-               Content="Download video from Youtube"
-               Foreground="White" FontSize="18"
-               HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
-        <Label Grid.Row="1"
-               x:Name="urlLabel" Content="Paste link here:"
-               Foreground="DarkGray" FontSize="10"/>
-        <Label Grid.Row="1"
-        x:Name="Format" Content="Format"
-        Foreground="DarkGray" FontSize="10" Margin="372,0,101,0"/>
-        <Label Grid.Row="1"
-             x:Name="Quality" Content="Quality"
-             Foreground="DarkGray" FontSize="10" Margin="463,0,10,0"/>
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Label Content="Download video from Youtube"
+           Foreground="White" FontSize="18"
+           HorizontalAlignment="Center"/>
+
+            <Button x:Name="ProfileBtn"
+            Width="36" Height="36"
+            HorizontalAlignment="Right"
+            BorderThickness="0"
+            Padding="0"
+            Click="ProfileBtn_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter/>
+                    </ControlTemplate>
+                </Button.Template>
+                <Grid Width="36" Height="36">
+                    <Ellipse Fill="#FF0000"/>
+                    <TextBlock x:Name="InitialsText"
+                       Text="?"
+                       Foreground="White"
+                       FontWeight="Bold"
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+        </Grid>
+
+        <Popup x:Name="ProfilePopup"
+       PlacementTarget="{Binding ElementName=ProfileBtn}"
+       Placement="Left"
+       StaysOpen="False"
+       HorizontalOffset="8"
+       AllowsTransparency="True">
+            <Border Background="#2B2B2B"
+            CornerRadius="10"
+            Padding="12"
+            Width="200"
+            BorderBrush="#444"
+            BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" Opacity="0.6" ShadowDepth="4" Color="Black"/>
+                </Border.Effect>
+                <StackPanel>
+            
+                    <StackPanel.Resources>
+                        <Style x:Key="MenuBtn" TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="Padding" Value="4,5"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="4"
+                                        Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Left"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#4A4A4A"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#555"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <TextBlock x:Name="CurrentLoginText"
+                       Foreground="White"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Margin="0,0,0,2"/>
+                    <TextBlock x:Name="StatsText"
+                       Foreground="#888"
+                       FontSize="10"
+                       Margin="0,0,0,8"/>
+
+                    <Separator Background="#555" Margin="0,0,0,6"/>
+
+                    <TextBlock Text="Accounts"
+                       Foreground="#666"
+                       FontSize="9"
+                       Margin="0,0,0,4"/>
+
+                    <ItemsControl x:Name="AccountsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontSize="12"
+                                Padding="4,5"
+                                Tag="{Binding}"
+                                Click="SwitchAccount_Click"
+                                Cursor="Hand">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="border"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="4"
+                                                        Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="Left"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="border" Property="Background" Value="#4A4A4A"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsPressed" Value="True">
+                                                                <Setter TargetName="border" Property="Background" Value="#555"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Separator Background="#555" Margin="0,6,0,4"/>
+
+                    <Button Content="+ Add account"
+                    Foreground="#AAA"
+                    Style="{StaticResource MenuBtn}"
+                    Click="AddAccount_Click"/>
+
+                    <Button Content="Remove this account"
+                    Foreground="IndianRed"
+                    Style="{StaticResource MenuBtn}"
+                    Click="RemoveAccount_Click"/>
+
+                    <Button Content="Log out"
+                    Foreground="#AAA"
+                    Style="{StaticResource MenuBtn}"
+                    Click="LogOut_Click"/>
+                </StackPanel>
+            </Border>
+        </Popup>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -40,28 +186,41 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="urlTable"
-                     TextChanged="urlTable_TextChanged"
-                     Grid.Column="0"
-                     Foreground="Gray" Background="#3C3F41"
-                     BorderBrush="#555" FontSize="14"
-                     Height="35" Padding="8,0"
-                     VerticalContentAlignment="Center"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <ComboBox x:Name="typeBox"
-                      Grid.Column="1" Width="80" Height="35"
-                      Margin="10,0,0,0" Background="#3C3F41"
-                      Foreground="white" Padding="5,0,0,0" VerticalAlignment="Bottom"/>
+            <TextBlock x:Name="urlLabel" Text="Paste link here:" Grid.Row="0" Grid.Column="0" 
+               Foreground="DarkGray" FontSize="10" VerticalAlignment="Bottom"/>
 
-            <ComboBox x:Name="qualityBox"
-                      Grid.Column="2" Width="80" Height="35"
-                      Margin="10,0,0,0" Background="#3C3F41"
-                       Padding="5,0,0,0" Foreground="White"/>
+            <TextBlock x:Name="FormatLabel" Text="Format" Grid.Row="0" Grid.Column="1" 
+               Foreground="DarkGray" FontSize="10" Margin="10,-2,0,0" Width="80"/>
+
+            <TextBlock x:Name="QualityLabel" Text="Quality" Grid.Row="0" Grid.Column="2" 
+               Foreground="DarkGray" FontSize="10" Margin="10,-2,0,0" Width="80"/>
+
+            <TextBox x:Name="urlTable" Grid.Row="1" Grid.Column="0"
+             TextChanged="urlTable_TextChanged"
+             Foreground="Gray" Background="#3C3F41"
+             BorderBrush="#555" FontSize="14"
+             Height="35" Padding="8,0"
+             VerticalContentAlignment="Center"/>
+
+            <ComboBox x:Name="typeBox" Grid.Row="1" Grid.Column="1" 
+              Width="80" Height="35"
+              Margin="10,0,0,0" Background="#3C3F41"
+              Foreground="white" VerticalAlignment="Bottom"/>
+
+            <ComboBox x:Name="qualityBox" Grid.Row="1" Grid.Column="2" 
+              Width="80" Height="35"
+              Margin="10,0,0,0" Background="#3C3F41"
+              Padding="5,0,0,0" Foreground="White"/>
         </Grid>
 
-        <ScrollViewer Grid.Row="3"
-                      VerticalScrollBarVisibility="Hidden"
-                      Margin="0,10,0,0">
+        <ScrollViewer Grid.Row="4"
+              VerticalScrollBarVisibility="Hidden"
+              Margin="0,10,0,0">
             <ItemsControl x:Name="videoList">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -118,7 +277,7 @@
                            Margin="0,4,0,0"/>
                                         <TextBlock Text="{Binding FileSizeDisplay}"
                             Foreground="#888" FontSize="10"
-                            Margin="0,2,0,0"/>   
+                            Margin="0,2,0,0"/>
                                     </StackPanel>
 
                                     <Button Grid.Column="2"

@@ -14,7 +14,7 @@ namespace Downloader
     public partial class UsersApp : Window
     {
         private AuthService authService = new AuthService();
-
+        
         public bool IsAddingAccount { get; set; } = false;
         public UsersApp()
         {

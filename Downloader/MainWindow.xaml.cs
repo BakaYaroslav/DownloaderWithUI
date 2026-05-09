@@ -30,6 +30,7 @@ namespace Downloader
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
             LoadVideosForCurrentUser();
+    
         }
 
         private string GetInitial(string login)

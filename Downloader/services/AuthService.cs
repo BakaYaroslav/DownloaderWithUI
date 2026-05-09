@@ -1,8 +1,9 @@
-﻿using System;
+﻿using BCrypt.Net;
+using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using MySql.Data.MySqlClient;
-
 
 namespace Downloader.services
 {
@@ -13,6 +14,7 @@ namespace Downloader.services
         {
             try
             {
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
                 using var connection = new MySqlConnection(DatabaseConfig.ConnectionString);
                 connection.Open();
 
@@ -21,7 +23,7 @@ namespace Downloader.services
                 connection);
 
                 cmd.Parameters.AddWithValue("@login", login);
-                cmd.Parameters.AddWithValue("@password", password);
+                cmd.Parameters.AddWithValue("@password", hashedPassword);
                 cmd.Parameters.AddWithValue("@email", email);
 
                 cmd.ExecuteNonQuery(); // Выполняет запрос на вставку данных в таблицу users
@@ -39,14 +41,19 @@ namespace Downloader.services
             {
                 using var connection = new MySqlConnection(DatabaseConfig.ConnectionString);
                 connection.Open();
-                var cmd = new MySqlCommand("SELECT COUNT(*) FROM users " +
-                                            "WHERE login = @login AND password = @password",
-                connection);
+                var cmd = new MySqlCommand(
+            "SELECT password FROM users WHERE login = @login",
+            connection);
+
                 cmd.Parameters.AddWithValue("@login", login);
-                cmd.Parameters.AddWithValue("@password", password);
-                long count = (long)cmd.ExecuteScalar(); // проверяет, существует ли пользователь с таким логином и паролем
-                cmd.ExecuteNonQuery();
-                return count > 0; // если count больше 0, значит пользователь с таким логином и паролем существует, и мы возвращаем true, иначе false
+
+                var result = cmd.ExecuteScalar(); // выполняет запрос и возвращает одно значение (первую колонку первой строки)
+
+                if (result == null)
+                    return false;
+
+                string hashedPassword = result.ToString();
+                return BCrypt.Net.BCrypt.Verify(password, hashedPassword); // Сравнивает введенный пароль с хешированным паролем из базы данных по первой записи
             }
             catch
             {
@@ -54,6 +61,9 @@ namespace Downloader.services
             }
 
         }
+
+
+       
     }
 }
 

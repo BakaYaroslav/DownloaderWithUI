@@ -13,9 +13,12 @@
 		<GenerateExecutable>true</GenerateExecutable>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+		<PackageReference Include="LibVLCSharp.WPF" Version="3.9.7.1" />
 		<PackageReference Include="MaterialDesignThemes" Version="5.3.1" />
 		<PackageReference Include="MySql.Data" Version="9.6.0" />
 		<PackageReference Include="System.Data.SQLite" Version="2.0.3" />
+		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23.1" />
 		<PackageReference Include="YoutubeDLSharp" Version="1.2.0" />
 	</ItemGroup>
 	<ItemGroup>

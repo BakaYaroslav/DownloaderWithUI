@@ -25,7 +25,19 @@
                 <PasswordBox x:Name="firstPassword" KeyDown="firstPassword_KeyDown" materialDesign:HintAssist.Hint="Enter password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
                 <TextBlock x:Name="PasswordError" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
 
-               
+                <Button x:Name="ForgotPasswordBtn" 
+            Content="Forgot password?" 
+            Foreground="White" 
+            FontSize="12"
+            HorizontalAlignment="Right"
+            Style="{StaticResource MaterialDesignFlatButton}"
+            Background="Transparent"
+            BorderBrush="Transparent"
+            Click="ForgotPasswordBtn_Click"
+            Visibility="Collapsed"/>
+
+
+
                 <StackPanel x:Name="RegPanel">
                     <PasswordBox x:Name="secondPassword" KeyDown="secondPassword_KeyDown" materialDesign:HintAssist.Hint="confirm password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
                     <TextBlock x:Name="PasswordError2" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
@@ -33,9 +45,53 @@
                     <TextBlock x:Name="EmailError" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
                 </StackPanel>
 
-                
-
                 <Button x:Name="ActionBtn" Content="Sign Up" Background="#33FFFFFF" Foreground="White" Height="40" Width="457" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,20,0,0" Click="ActionBtn_Click"/>
+
+                <StackPanel x:Name="PasswordPanel" Visibility="Collapsed">
+                    <TextBox x:Name="EmailTextBox_pass" KeyDown="EmailTextBox_KeyDown" materialDesign:HintAssist.Hint="Email" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <TextBlock x:Name="EmailError_pass" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+                    <Button x:Name="SendCode" Content="Send Code" Background="#33FFFFFF" Foreground="White" Height="40" Width="457" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,20,0,0" Click="SendCode_Click"/>
+                </StackPanel>
+
+                <StackPanel x:Name="CodePanel" Visibility="Collapsed">
+                    <TextBlock Text="Enter code from email" Foreground="White" 
+               HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBox x:Name="C1" MaxLength="1" Width="45" Height="50" FontSize="24" 
+                 TextAlignment="Center" Foreground="White" Background="#2a2a2a" 
+                 BorderBrush="#ff4444" Margin="5" TextChanged="CodeBox_TextChanged"/>
+                        <TextBox x:Name="C2" MaxLength="1" Width="45" Height="50" FontSize="24" 
+                 TextAlignment="Center" Foreground="White" Background="#2a2a2a" 
+                 BorderBrush="#ff4444" Margin="5" TextChanged="CodeBox_TextChanged"/>
+                        <TextBox x:Name="C3" MaxLength="1" Width="45" Height="50" FontSize="24" 
+                 TextAlignment="Center" Foreground="White" Background="#2a2a2a" 
+                 BorderBrush="#ff4444" Margin="5" TextChanged="CodeBox_TextChanged"/>
+                        <TextBox x:Name="C4" MaxLength="1" Width="45" Height="50" FontSize="24" 
+                 TextAlignment="Center" Foreground="White" Background="#2a2a2a" 
+                 BorderBrush="#ff4444" Margin="5" TextChanged="CodeBox_TextChanged"/>
+                        <TextBox x:Name="C5" MaxLength="1" Width="45" Height="50" FontSize="24" 
+                 TextAlignment="Center" Foreground="White" Background="#2a2a2a" 
+                 BorderBrush="#ff4444" Margin="5" TextChanged="CodeBox_TextChanged"/>
+                        <TextBox x:Name="C6" MaxLength="1" Width="45" Height="50" FontSize="24" 
+                 TextAlignment="Center" Foreground="White" Background="#2a2a2a" 
+                 BorderBrush="#ff4444" Margin="5" TextChanged="CodeBox_TextChanged"/>
+                    </StackPanel>
+                    <TextBlock x:Name="CodeError" Foreground="IndianRed" FontSize="11" 
+               Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                    <Button x:Name="VerifyBtn" Content="Verify" Background="#33FFFFFF" Foreground="White" 
+            Height="40" Width="457" Style="{StaticResource MaterialDesignFlatButton}" 
+            Margin="0,20,0,0" Click="VerifyBtn_Click"/>
+                </StackPanel>
+
+
+                <StackPanel x:Name="NewPassPanel" Visibility="Collapsed">
+                    <PasswordBox x:Name="newfirstPassword" KeyDown="firstPassword_KeyDown" materialDesign:HintAssist.Hint="Enter password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                    <TextBlock x:Name="newPasswordError" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="newsecondPassword" KeyDown="secondPassword_KeyDown" materialDesign:HintAssist.Hint="confirm password" Foreground="White" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
+                    <TextBlock x:Name="newPasswordError2" Foreground="IndianRed" FontSize="11" Visibility="Collapsed" Margin="0,0,0,5"/>
+                    <Button x:Name="CreatePassword" Content="Create Password" Background="#33FFFFFF" Foreground="White" Height="40" Width="457" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,20,0,0" Click="CreatePassword_Click"/>
+                </StackPanel>
+           
             </StackPanel>
         </Border>
     </Grid>

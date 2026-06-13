@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(git rm *)",
+      "Bash(git stash *)",
+      "Bash(git filter-branch *)",
+      "Bash(git update-ref *)",
+      "Bash(git reflog *)",
+      "Bash(git gc *)",
+      "Bash(git rev-list *)",
+      "Bash(git check-ignore *)",
+      "Bash(git count-objects *)",
+      "Bash(git fsck *)"
+    ]
+  }
+}

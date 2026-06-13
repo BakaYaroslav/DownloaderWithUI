@@ -14,8 +14,6 @@ namespace Downloader
         ObservableCollection<VideoInfo> videos = new ObservableCollection<VideoInfo>();
         VideoInfo video = new VideoInfo();
 
-
-
         public string CurrentLogin { get; set; }
 
         public MainWindow(string login)

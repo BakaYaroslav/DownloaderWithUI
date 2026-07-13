@@ -1,6 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Windows;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Options;
@@ -19,14 +22,15 @@ namespace Downloader
 
         }
 
-        // async говорит: "этот метод будет ждать не замораживая программу"
+        public string YtDlpPath => ytdl.YoutubeDLPath;
+
         public async Task<bool> Download(string url, string outputFolder, string format, IProgress<double> progress)
 
         {
             ytdl.OutputFolder = outputFolder;
             var options = new OptionSet(); // это класс, который содержит все настройки для загрузки видео.
             options.Format = format;
-           
+
             options.AddCustomOption("--recode-video", "mp4");
 
 
@@ -100,5 +104,7 @@ namespace Downloader
 
 
         }
+
+
     }
 }

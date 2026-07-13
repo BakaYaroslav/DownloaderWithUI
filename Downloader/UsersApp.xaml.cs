@@ -24,7 +24,7 @@ namespace Downloader
 
         private void Button_Reg_Click(object sender, RoutedEventArgs e)
         {
-            // ЗАХИСТ: Якщо ми відновлюємо пароль, ігноруємо реєстрацію повністю
+           
             if (PasswordPanel.Visibility == Visibility.Visible || CodePanel.Visibility == Visibility.Visible || NewPassPanel.Visibility == Visibility.Visible)
                 return;
 

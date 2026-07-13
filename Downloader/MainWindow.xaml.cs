@@ -11,6 +11,7 @@ namespace Downloader
     public partial class MainWindow : Window
     {
         VideoDownloader downloader = new VideoDownloader();
+        YtDlpUpdateChecker updateChecker = new YtDlpUpdateChecker();
         ObservableCollection<VideoInfo> videos = new ObservableCollection<VideoInfo>();
         VideoInfo video = new VideoInfo();
 
@@ -28,7 +29,8 @@ namespace Downloader
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
             LoadVideosForCurrentUser();
-    
+            CheckYtDlpUpdate();
+
         }
 
         private string GetInitial(string login)
@@ -151,7 +153,7 @@ namespace Downloader
                 info.VideoId = url.Split("v=")[1].Split("&")[0];
 
                 VideoService.SaveVideo(CurrentLogin, info);
-                videos.Add(info);
+                videos.Insert(0, info);
 
             }
             catch (Exception ex)
@@ -221,5 +223,19 @@ namespace Downloader
                 VideoService.DeleteVideo(CurrentLogin, item);
             }
         }
+
+        private async void CheckYtDlpUpdate()
+        {
+            string local = await updateChecker.GetLocalVersionAsync(downloader.YtDlpPath);
+            var (latest, downloadUrl) = await updateChecker.GetLatestReleaseInfoAsync();
+
+            if (updateChecker.IsUpdateAvailable(local, latest))
+            {
+                var updateWindow = new UpdateWindow(local, latest, downloadUrl, downloader.YtDlpPath, updateChecker);
+                updateWindow.Owner = this;
+                updateWindow.ShowDialog();
+            }
+        }
     }
+
 }

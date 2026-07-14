@@ -75,18 +75,18 @@ namespace Downloader.services
 
                 long userExists = Convert.ToInt64(cmd.ExecuteScalar());
                 if (userExists == 0)
-                    return false; // Користувача з такою поштою немає в базі
+                    return false; 
 
-                // Генеруємо 6-значний код
+              
                 Random rnd = new Random();
                 _resetCode = rnd.Next(100000, 999999);
                 _codeCreatedAt = DateTime.Now;
 
-                // Підключаємо твій готовий EmailService і відправляємо реальний лист
+               
                 EmailService emailService = new EmailService();
                 bool mailSent = emailService.SendMailMessage(email, _resetCode);
 
-                return mailSent; // Поверне true, якщо лист успішно пішов
+                return mailSent; 
             }
             catch
             {
@@ -162,5 +162,8 @@ namespace Downloader.services
                 return false;
             }
         }
+
+
+      
     }
 }

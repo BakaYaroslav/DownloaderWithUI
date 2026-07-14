@@ -56,7 +56,8 @@ namespace Downloader.services
 
                 var smtp = new SmtpClient("smtp.gmail.com");
                 smtp.Port = 587;
-                smtp.Credentials = new NetworkCredential("noreply.downloader.app@gmail.com", "usgh dmui vidh ysht");
+                string password = Environment.GetEnvironmentVariable("EMAIL_APP_PASSWORD");
+                smtp.Credentials = new NetworkCredential("noreply.downloader.app@gmail.com", password);
                 smtp.EnableSsl = true;
                 smtp.Send(mail);
                 return true;
@@ -69,5 +70,5 @@ namespace Downloader.services
 
 
     }
-    
+
 }

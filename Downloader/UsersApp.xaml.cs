@@ -306,8 +306,6 @@ namespace Downloader
 
             if (success)
             {
-                MessageBox.Show("Password changed successfully! Please log in.");
-
                 ClearAllErrorTexts();
 
                 NewPassPanel.Visibility = Visibility.Collapsed;

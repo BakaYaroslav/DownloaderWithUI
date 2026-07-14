@@ -10,6 +10,7 @@ namespace Downloader
 
     public partial class MainWindow : Window
     {
+
         VideoDownloader downloader = new VideoDownloader();
         YtDlpUpdateChecker updateChecker = new YtDlpUpdateChecker();
         ObservableCollection<VideoInfo> videos = new ObservableCollection<VideoInfo>();
@@ -17,8 +18,11 @@ namespace Downloader
 
         public string CurrentLogin { get; set; }
 
+
+
         public MainWindow(string login)
         {
+
             InitializeComponent();
             CurrentLogin = login;
             typeBox.ItemsSource = new List<string> { "Video", "Audio" };
@@ -32,7 +36,7 @@ namespace Downloader
             CheckYtDlpUpdate();
 
         }
-
+ 
         private string GetInitial(string login)
         {
             if (string.IsNullOrEmpty(login)) return "?";

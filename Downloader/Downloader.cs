@@ -40,13 +40,13 @@ namespace Downloader
         public string YtDlpPath => ytdl.YoutubeDLPath;
 
         public async Task<bool> Download(
-         string url,
-         string outputFolder,
-         string format,
-         IProgress<double> progress,
-         CancellationToken cancellationToken = default,
-         TimeSpan? trimStart = null,
-         TimeSpan? trimEnd = null)
+      string url,
+      string outputFolder,
+      string format,
+      IProgress<double> progress,
+      CancellationToken cancellationToken = default,
+      TimeSpan? trimStart = null,
+      TimeSpan? trimEnd = null)
         {
             ytdl.OutputFolder = outputFolder;
             var options = new OptionSet();
@@ -55,14 +55,24 @@ namespace Downloader
 
             if (trimStart.HasValue || trimEnd.HasValue)
             {
-                string start = trimStart?.ToString(@"hh\:mm\:ss") ?? "00:00:00";
-                string end = trimEnd?.ToString(@"hh\:mm\:ss") ?? "inf";
-                options.AddCustomOption("--download-sections", $"*{start}-{end}");
-                options.AddCustomOption("--force-keyframes-at-cuts", "");
+                if (trimStart.HasValue || trimEnd.HasValue)
+                {
+                    string start = trimStart?.ToString(@"hh\:mm\:ss") ?? "00:00:00";
+                    string end = trimEnd?.ToString(@"hh\:mm\:ss") ?? "inf";
+                    options.AddCustomOption("--download-sections", $"*{start}-{end}");
+                   
+                }
             }
 
             var progressBar = new Progress<DownloadProgress>(p => progress.Report(p.Progress * 100));
             var result = await ytdl.RunVideoDownload(url, overrideOptions: options, progress: progressBar, ct: cancellationToken);
+
+            if (!result.Success)
+            {
+                System.Diagnostics.Debug.WriteLine("yt-dlp error output:");
+                foreach (var line in result.ErrorOutput)
+                    System.Diagnostics.Debug.WriteLine(line);
+            }
 
             return result.Success;
         }
@@ -132,26 +142,68 @@ namespace Downloader
 
         }
 
-        public async Task<string> GetPreviewStreamUrl(string url)
+        public async Task<(string videoUrl, string audioUrl)> GetPreviewStreams(string url)
         {
             var result = await ytdl.RunVideoDataFetch(url);
             if (!result.Success || result.Data == null)
-                return null;
+                return (null, null);
 
-            var format = result.Data.Formats
-                .Where(f => f.Extension == "mp4" && f.Height != null && f.AudioCodec != "none" && f.AudioCodec != null)
+            // Ищем progressive-поток (видео+звук вместе) — если есть, он проще
+            var progressive = result.Data.Formats
+                .Where(f => f.Extension == "mp4" && f.Height != null && f.Url != null
+                         && !f.Url.Contains(".m3u8")
+                         && f.AudioCodec != "none" && f.AudioCodec != null)
                 .OrderByDescending(f => f.Height)
                 .FirstOrDefault();
 
-            if (format == null)
-            {
-                format = result.Data.Formats
-                    .Where(f => f.Extension == "mp4" && f.Height != null)
-                    .OrderByDescending(f => f.Height)
-                    .FirstOrDefault();
-            }
+            if (progressive != null)
+                return (progressive.Url, null); 
 
-            return format?.Url;
+            // Иначе берём видео и аудио отдельно (DASH)
+            var video = result.Data.Formats
+                .Where(f => f.Extension == "mp4" && f.Height != null && f.Url != null
+                         && !f.Url.Contains(".m3u8"))
+                .OrderByDescending(f => f.Height)
+                .FirstOrDefault();
+
+            var audio = result.Data.Formats
+                .Where(f => f.Url != null && !f.Url.Contains(".m3u8")
+                         && f.AudioCodec != null && f.AudioCodec != "none"
+                         && f.VideoCodec == "none")
+                .OrderByDescending(f => f.AudioBitrate ?? 0)
+                .FirstOrDefault();
+
+            return (video?.Url, audio?.Url);
+        }
+
+
+
+
+        public string FfmpegPath => ytdl.FFmpegPath;
+
+        public async Task<List<string>> GenerateThumbnails(string streamUrl, double durationSeconds, int count = 10)
+        {
+            string tempFolder = Path.Combine(Path.GetTempPath(), "DownloaderThumbs_" + Guid.NewGuid());
+            Directory.CreateDirectory(tempFolder);
+
+            double interval = durationSeconds / count;
+            string outputPattern = Path.Combine(tempFolder, "thumb_%03d.jpg");
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = FfmpegPath,
+                Arguments = $"-y -i \"{streamUrl}\" -vf \"fps=1/{interval.ToString(System.Globalization.CultureInfo.InvariantCulture)}\" -vframes {count} -q:v 5 \"{outputPattern}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var process = Process.Start(psi);
+            await process.WaitForExitAsync();
+
+            var files = Directory.GetFiles(tempFolder, "thumb_*.jpg").OrderBy(f => f).ToList();
+            return files;
         }
     }
 }

@@ -63,12 +63,14 @@ namespace Downloader.services
             connection.Open();
             var cmd = new MySqlCommand(
                 @"UPDATE videos 
-          SET file_size_mb = @size, quality = @quality, format = @format
+          SET file_size_mb = @size, quality = @quality, format = @format, trim_start = @trimStart, trim_end = @trimEnd
           WHERE login = @login AND url = @url",
                 connection);
             cmd.Parameters.AddWithValue("@size", video.FileSizeMb);
             cmd.Parameters.AddWithValue("@quality", video.Quality ?? "");
             cmd.Parameters.AddWithValue("@format", video.Format ?? "");
+            cmd.Parameters.AddWithValue("@trimStart", video.TrimStart.HasValue ? (object)video.TrimStart.Value.TotalSeconds : DBNull.Value);
+            cmd.Parameters.AddWithValue("@trimEnd", video.TrimEnd.HasValue ? (object)video.TrimEnd.Value.TotalSeconds : DBNull.Value);
             cmd.Parameters.AddWithValue("@login", login);
             cmd.Parameters.AddWithValue("@url", video.Url);
             cmd.ExecuteNonQuery();

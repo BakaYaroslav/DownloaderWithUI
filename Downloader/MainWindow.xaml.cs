@@ -204,7 +204,12 @@ namespace Downloader
             {
                 if (type == "Video")
                 {
-                    bool success = await downloader.Download(url, downFolder, quality, progress, info.CancellationTokenSource.Token);
+     
+                    bool success = await downloader.Download(url, downFolder, quality, progress, info.CancellationTokenSource.Token, info.TrimStart, info.TrimEnd);
+                    if (!success)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Download failed for: " + url);
+                    }
                     if (success)
                     {
                         var file = Directory.GetFiles(downFolder, "*.mp4")
@@ -233,6 +238,7 @@ namespace Downloader
             {
                 info.CancellationTokenSource = null;
             }
+
         }
 
         private void RemoveCard_Click(object sender, RoutedEventArgs e)
@@ -273,7 +279,7 @@ namespace Downloader
         {
             MainView.Visibility = Visibility.Collapsed;
             EditorView.Visibility = Visibility.Visible;
-            EditorControl.LoadVideo(info, downloader); // метод внутри UserControl, который сам всё загрузит
+            EditorControl.LoadVideo(info, downloader, CurrentLogin);
         }
 
         private void CloseEditor()

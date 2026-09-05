@@ -25,43 +25,44 @@ namespace Downloader
             this.Close();
         }
 
-       private async void UpdateButton_Click(object sender, RoutedEventArgs e)
-{
-    UpdateButton.IsEnabled = false;
-    LaterButton.IsEnabled = false;
-    DownloadProgressBar.Visibility = Visibility.Visible;
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateButton.IsEnabled = false;
+            LaterButton.IsEnabled = false;
+            DownloadProgressBar.Visibility = Visibility.Visible;
 
-    var progress = new Progress<double>(percent =>
-    {
-        DownloadProgressBar.Value = percent;
-    });
+            var progress = new Progress<double>(percent =>
+            {
+                DownloadProgressBar.Value = percent;
+            });
 
-    string tempPath = destinationPath + ".new";
+            string tempPath = destinationPath + ".new";
 
-    try
-    {
-        await checker.DownloadFileAsync(downloadUrl, tempPath, progress);
+            try
+            {
+                await checker.DownloadFileAsync(downloadUrl, tempPath, progress);
 
-        if (!File.Exists(tempPath) || new FileInfo(tempPath).Length == 0)
-            throw new Exception("Downloaded file is missing or empty");
+                if (!File.Exists(tempPath) || new FileInfo(tempPath).Length == 0)
+                    throw new Exception("Downloaded file is missing or empty");
 
-        if (File.Exists(destinationPath))
-            File.Delete(destinationPath);
+                if (File.Exists(destinationPath))
+                    File.Delete(destinationPath);
 
-        File.Move(tempPath, destinationPath);
+                File.Move(tempPath, destinationPath);
 
-        MessageText.Text = "Update complete!";
-        DownloadProgressBar.Visibility = Visibility.Collapsed;
-        LaterButton.Content = "Close";
-        LaterButton.IsEnabled = true;
-    }
-    catch (Exception ex)
-    {
-        MessageText.Text = "Update failed: " + ex.Message;
-        DownloadProgressBar.Visibility = Visibility.Collapsed;
-        UpdateButton.IsEnabled = true;
-        LaterButton.IsEnabled = true;
-    }
-}
+                MessageText.Text = "Update complete!";
+                DownloadProgressBar.Visibility = Visibility.Collapsed;
+                LaterButton.Content = "Close";
+                LaterButton.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageText.Text = "Update failed: " + ex.Message;
+                DownloadProgressBar.Visibility = Visibility.Collapsed;
+                UpdateButton.IsEnabled = true;
+                LaterButton.IsEnabled = true;
+            }
+        }
+
     }
 }

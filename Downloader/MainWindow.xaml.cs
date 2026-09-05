@@ -32,6 +32,8 @@ namespace Downloader
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
+            EditorControl.CloseRequested += CloseEditor;
+
             LoadVideosForCurrentUser();
             CheckYtDlpUpdate();
 
@@ -164,8 +166,7 @@ namespace Downloader
             {
                 urlLabel.Text = "Invalid URL or YOU!";
                 urlLabel.Foreground = Brushes.Red;
-
-
+                MessageBox.Show("URL processing failed: " + ex.Message + "\n\nInner: " + ex.InnerException?.Message);
             }
         }
         private async void Button_Click(object sender, RoutedEventArgs e)

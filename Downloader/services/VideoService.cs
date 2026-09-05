@@ -12,7 +12,7 @@ namespace Downloader.services
             connection.Open();
             var cmd = new MySqlCommand(
         @"INSERT INTO videos (login, title, url, duration, author, file_size_mb, quality, format, trim_start, trim_end) 
-  VALUES (@login, @title, @url, @duration, @author, @fileSizeMb, @quality, @format, @trimStart, @trimEnd)",
+  VALUES (@login, @title, @url, @duration, @author, @fileSizeMb, @quality, @format, @trim_start, @trim_end)",
                 connection);
             cmd.Parameters.AddWithValue("@login", login);
             cmd.Parameters.AddWithValue("@title", video.Title);

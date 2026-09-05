@@ -15,9 +15,11 @@
 
         <Grid Grid.Row="1">
             <MediaElement x:Name="previewPlayer"
-                          LoadedBehavior="Manual"
-                          UnloadedBehavior="Manual"
-                          Stretch="Uniform"/>
+                  LoadedBehavior="Manual"
+                  UnloadedBehavior="Manual"
+                  Stretch="Uniform"
+                  MediaFailed="previewPlayer_MediaFailed"
+                  MediaOpened="previewPlayer_MediaOpened"/>
             <TextBlock x:Name="LoadingText" Text="Loading preview..."
                        Foreground="White" HorizontalAlignment="Center"
                        VerticalAlignment="Center" FontSize="14"/>

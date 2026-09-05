@@ -11,9 +11,9 @@ namespace Downloader.services
             using var connection = new MySqlConnection(DatabaseConfig.ConnectionString);
             connection.Open();
             var cmd = new MySqlCommand(
-    @"INSERT INTO videos (login, title, url, duration, author, file_size_mb, quality, format) 
-      VALUES (@login, @title, @url, @duration, @author, @fileSizeMb, @quality, @format)",
-    connection);
+        @"INSERT INTO videos (login, title, url, duration, author, file_size_mb, quality, format, trim_start, trim_end) 
+  VALUES (@login, @title, @url, @duration, @author, @fileSizeMb, @quality, @format, @trimStart, @trimEnd)",
+                connection);
             cmd.Parameters.AddWithValue("@login", login);
             cmd.Parameters.AddWithValue("@title", video.Title);
             cmd.Parameters.AddWithValue("@url", video.Url);
@@ -22,6 +22,9 @@ namespace Downloader.services
             cmd.Parameters.AddWithValue("@format", video.Format ?? "");
             cmd.Parameters.AddWithValue("@quality", video.Quality ?? "");
             cmd.Parameters.AddWithValue("@fileSizeMb", video.FileSizeMb);
+           
+            cmd.Parameters.AddWithValue("@trim_start", video.TrimStart.HasValue ? (object)video.TrimStart.Value.TotalSeconds : DBNull.Value);
+            cmd.Parameters.AddWithValue("@trim_end", video.TrimEnd.HasValue ? (object)video.TrimEnd.Value.TotalSeconds : DBNull.Value);
             cmd.ExecuteNonQuery();
         }
 
@@ -31,7 +34,7 @@ namespace Downloader.services
             using var connection = new MySqlConnection(DatabaseConfig.ConnectionString);
             connection.Open();
             var cmd = new MySqlCommand(
-                "SELECT title, url, duration, author, file_size_mb, quality, format FROM videos WHERE login = @login ORDER BY created_at DESC",
+                 "SELECT title, url, duration, author, file_size_mb, quality, format, trim_start, trim_end FROM videos WHERE login = @login ORDER BY created_at DESC",
                  connection);
             cmd.Parameters.AddWithValue("@login", login);
             using var reader = cmd.ExecuteReader();
@@ -47,7 +50,9 @@ namespace Downloader.services
                     Author = reader.IsDBNull(reader.GetOrdinal("author")) ? "" : reader.GetString("author"),
                     Quality = reader.IsDBNull(reader.GetOrdinal("quality")) ? "" : reader.GetString("quality"),
                     Format = reader.IsDBNull(reader.GetOrdinal("format")) ? "" : reader.GetString("format"),
-                    FileSizeMb = reader.IsDBNull(reader.GetOrdinal("file_size_mb")) ? 0 : reader.GetDouble("file_size_mb")
+                    FileSizeMb = reader.IsDBNull(reader.GetOrdinal("file_size_mb")) ? 0 : reader.GetDouble("file_size_mb"),
+                    TrimStart = reader.IsDBNull(reader.GetOrdinal("trim_start")) ? (TimeSpan?)null : TimeSpan.FromSeconds(reader.GetDouble("trim_start")),
+                    TrimEnd = reader.IsDBNull(reader.GetOrdinal("trim_end")) ? (TimeSpan?)null : TimeSpan.FromSeconds(reader.GetDouble("trim_end")),
 
                 });
             } return list;

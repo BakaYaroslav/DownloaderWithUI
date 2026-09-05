@@ -216,7 +216,7 @@ namespace Downloader
                 {
                     PasswordError.Text = "Invalid login or password";
                     PasswordError.Visibility = Visibility.Visible;
-                    ForgotPasswordBtn.Visibility = Visibility.Visible; // Показуємо кнопку ТІЛЬКИ після помилки
+                    ForgotPasswordBtn.Visibility = Visibility.Visible;
                 }
             }
             else if (ActionBtn.Content.ToString() == "Sign In")
@@ -236,6 +236,10 @@ namespace Downloader
             ActionBtn.Visibility = Visibility.Collapsed;
 
             PasswordPanel.Visibility = Visibility.Visible;
+
+         
+
+
         }
 
         private void CodeBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

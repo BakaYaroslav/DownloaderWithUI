@@ -38,15 +38,30 @@ namespace Downloader
 
             string tempPath = destinationPath + ".new";
 
-            await checker.DownloadFileAsync(downloadUrl, tempPath, progress);
+            try
+            {
+                await checker.DownloadFileAsync(downloadUrl, tempPath, progress);
 
-            File.Delete(destinationPath);
-            File.Move(tempPath, destinationPath);
+                if (!File.Exists(tempPath) || new FileInfo(tempPath).Length == 0)
+                    throw new Exception("Downloaded file is missing or empty");
 
-            MessageText.Text = "Update complete!";
-            DownloadProgressBar.Visibility = Visibility.Collapsed;
-            LaterButton.Content = "Close";
-            LaterButton.IsEnabled = true;
+                if (File.Exists(destinationPath))
+                    File.Delete(destinationPath);
+
+                File.Move(tempPath, destinationPath);
+
+                MessageText.Text = "Update complete!";
+                DownloadProgressBar.Visibility = Visibility.Collapsed;
+                LaterButton.Content = "Close";
+                LaterButton.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageText.Text = "Update failed: " + ex.Message;
+                DownloadProgressBar.Visibility = Visibility.Collapsed;
+                UpdateButton.IsEnabled = true;
+                LaterButton.IsEnabled = true;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Downloader
 {
@@ -14,6 +15,11 @@ namespace Downloader
         public string VideoId { get; set; }
 
         public string Format { get; set; }
+
+        public TimeSpan? TrimStart { get; set; }
+        public TimeSpan? TrimEnd { get; set; }
+
+        public CancellationTokenSource CancellationTokenSource { get; set; }
 
 
         private double _fileSizeMb;

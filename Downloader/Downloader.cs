@@ -15,27 +15,54 @@ namespace Downloader
         YoutubeDL ytdl = new YoutubeDL(); // это класс с помощью которого мы будем скачивать видео и получать информацию о виде
         public VideoDownloader()
         {
+            string toolsDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Downloader", "tools");
+
+            Directory.CreateDirectory(toolsDir);
+
+            ytdl.YoutubeDLPath = Path.Combine(toolsDir, "yt-dlp.exe");
+            ytdl.FFmpegPath = Path.Combine(toolsDir, "ffmpeg.exe");
+
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            ytdl.YoutubeDLPath = Path.Combine(baseDir, @"tools\yt-dlp.exe");
-            ytdl.FFmpegPath = Path.Combine(baseDir, @"tools\ffmpeg-8.0.1-essentials_build\bin\ffmpeg.exe");
 
+            string bundledYtDlp = Path.Combine(baseDir, @"tools\yt-dlp.exe");
+            if (!File.Exists(ytdl.YoutubeDLPath) && File.Exists(bundledYtDlp))
+                File.Copy(bundledYtDlp, ytdl.YoutubeDLPath);
 
+            string bundledFfmpeg = Path.Combine(baseDir, @"tools\ffmpeg-8.0.1-essentials_build\bin\ffmpeg.exe");
+            if (!File.Exists(ytdl.FFmpegPath) && File.Exists(bundledFfmpeg))
+                File.Copy(bundledFfmpeg, ytdl.FFmpegPath);
         }
+
+
 
         public string YtDlpPath => ytdl.YoutubeDLPath;
 
-        public async Task<bool> Download(string url, string outputFolder, string format, IProgress<double> progress)
-
+        public async Task<bool> Download(
+         string url,
+         string outputFolder,
+         string format,
+         IProgress<double> progress,
+         CancellationToken cancellationToken = default,
+         TimeSpan? trimStart = null,
+         TimeSpan? trimEnd = null)
         {
             ytdl.OutputFolder = outputFolder;
-            var options = new OptionSet(); // это класс, который содержит все настройки для загрузки видео.
+            var options = new OptionSet();
             options.Format = format;
-
             options.AddCustomOption("--recode-video", "mp4");
 
+            if (trimStart.HasValue || trimEnd.HasValue)
+            {
+                string start = trimStart?.ToString(@"hh\:mm\:ss") ?? "00:00:00";
+                string end = trimEnd?.ToString(@"hh\:mm\:ss") ?? "inf";
+                options.AddCustomOption("--download-sections", $"*{start}-{end}");
+                options.AddCustomOption("--force-keyframes-at-cuts", "");
+            }
 
             var progressBar = new Progress<DownloadProgress>(p => progress.Report(p.Progress * 100));
-            var result = await ytdl.RunVideoDownload(url, overrideOptions: options, progress: progressBar);
+            var result = await ytdl.RunVideoDownload(url, overrideOptions: options, progress: progressBar, ct: cancellationToken);
 
             return result.Success;
         }
@@ -105,6 +132,26 @@ namespace Downloader
 
         }
 
+        public async Task<string> GetPreviewStreamUrl(string url)
+        {
+            var result = await ytdl.RunVideoDataFetch(url);
+            if (!result.Success || result.Data == null)
+                return null;
 
+            var format = result.Data.Formats
+                .Where(f => f.Extension == "mp4" && f.Height != null && f.AudioCodec != "none" && f.AudioCodec != null)
+                .OrderByDescending(f => f.Height)
+                .FirstOrDefault();
+
+            if (format == null)
+            {
+                format = result.Data.Formats
+                    .Where(f => f.Extension == "mp4" && f.Height != null)
+                    .OrderByDescending(f => f.Height)
+                    .FirstOrDefault();
+            }
+
+            return format?.Url;
+        }
     }
 }

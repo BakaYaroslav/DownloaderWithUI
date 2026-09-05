@@ -173,6 +173,16 @@ namespace Downloader
             var button = sender as Button;
             var info = button?.DataContext as VideoInfo;
 
+            // если уже скачивается — это клик по Cancel
+            if (info.CancellationTokenSource != null)
+            {
+                info.CancellationTokenSource.Cancel();
+                return;
+            }
+
+            info.CancellationTokenSource = new CancellationTokenSource();
+            info.Status = "Downloading...";
+
             string downFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             string url = info.Url;
 
@@ -182,38 +192,46 @@ namespace Downloader
             string type = typeBox.SelectedItem.ToString();
             info.Format = type == "Video" ? "mp4" : "mp3";
 
-
             var progress = new Progress<double>(value =>
             {
                 if (value == 0) return;
-                {
-                    info.Progress = value;
-                    info.Status = $"{value:F1}%";
-                }
+                info.Progress = value;
+                info.Status = $"{value:F1}%";
             });
-            if (type == "Video")
-            {
-                bool success = await downloader.Download(url, downFolder, quality, progress);
-                if (success)
-                {
-                    var file = Directory.GetFiles(downFolder, "*.mp4")
-                        .Select(f => new FileInfo(f))
-                        .OrderByDescending(f => f.LastWriteTime)
-                        .FirstOrDefault();
 
-                    info.FileSizeMb = file != null ? file.Length / (1024.0 * 1024.0) : 0;
-                    VideoService.UpdateAllInfo(CurrentLogin, info);
+            try
+            {
+                if (type == "Video")
+                {
+                    bool success = await downloader.Download(url, downFolder, quality, progress, info.CancellationTokenSource.Token);
+                    if (success)
+                    {
+                        var file = Directory.GetFiles(downFolder, "*.mp4")
+                            .Select(f => new FileInfo(f))
+                            .OrderByDescending(f => f.LastWriteTime)
+                            .FirstOrDefault();
+
+                        info.FileSizeMb = file != null ? file.Length / (1024.0 * 1024.0) : 0;
+                        VideoService.UpdateAllInfo(CurrentLogin, info);
+                        info.Status = "Downloaded!";
+                    }
+                    else info.Status = "Failed";
+                }
+                else if (type == "Audio")
+                {
+                    await downloader.DownloadAudio(url, downFolder, progress);
                     info.Status = "Downloaded!";
                 }
-                else info.Status = "Failed";
             }
-            else if (type == "Audio")
+            catch (OperationCanceledException)
             {
-                await downloader.DownloadAudio(url, downFolder, progress);
-                info.Status = "Downloaded!";
+                info.Status = "Cancelled";
+                info.Progress = 0;
             }
-
-
+            finally
+            {
+                info.CancellationTokenSource = null;
+            }
         }
 
         private void RemoveCard_Click(object sender, RoutedEventArgs e)
@@ -240,6 +258,30 @@ namespace Downloader
                 updateWindow.ShowDialog();
             }
         }
+
+        private void EditCard_Click(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            if (btn?.Tag is VideoInfo item)
+            {
+                OpenEditor(item);
+            }
+        }
+
+        private void OpenEditor(VideoInfo info)
+        {
+            MainView.Visibility = Visibility.Collapsed;
+            EditorView.Visibility = Visibility.Visible;
+            EditorControl.LoadVideo(info, downloader); // метод внутри UserControl, который сам всё загрузит
+        }
+
+        private void CloseEditor()
+        {
+            EditorView.Visibility = Visibility.Collapsed;
+            MainView.Visibility = Visibility.Visible;
+        }
+
+       
     }
 
 }
